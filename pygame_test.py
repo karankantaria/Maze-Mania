@@ -2,8 +2,10 @@ import pygame
 import os
 
 pygame.init()
-SCREEN_WIDTH = 704
-SCREEN_HEIGHT = 320
+# SCREEN_WIDTH = 704
+# SCREEN_HEIGHT = 320
+SCREEN_WIDTH = 960
+SCREEN_HEIGHT = 540
 #16:9^
 WINDOW=pygame.display.set_mode([SCREEN_WIDTH,SCREEN_HEIGHT])
 BLACK=(0,0,0)
@@ -13,7 +15,7 @@ BACKGROUND_TEST = pygame.transform.scale(pygame.image.load(os.path.join('Assets'
 PLAYER_IMAGE = pygame.image.load(os.path.join('Assets', 'test_sprite.png'))
 PLAYER_WIDTH = 30
 PLAYER_HEIGHT = 60
-PLAYER_COMP = pygame.transform.rotate(pygame.transform.scale(PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 0)
+PLAYER_COMP = pygame.transform.rotate(pygame.transform.scale(PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 0)#rotate redundant for now
 
 #Creating a class for player the main character
 class Player(pygame.sprite.Sprite):
@@ -41,6 +43,29 @@ def movement(entity,key_press):
     elif move[pygame.K_s]:
         player.move_ip(0,1)
 
+#Enemy behaviour
+def enemy():
+    pass
+
+#Loading level
+def load_level():
+    pass
+
+#for enemy collision and for trap collision
+def check_collision():
+    pass
+
+#For player animation
+def player_animation():
+    pass
+
+#For enemy animation
+def enemy_animation():
+    pass
+#Could be done in check_collision
+def coin_collect():
+    pass
+
 loop=True
 player_init = Player(20, 20, 100,50,PLAYER_IMAGE) #Creating a player as a object
 while loop:
@@ -59,5 +84,4 @@ while loop:
     pygame.display.update()
 
 
-#test changes
 pygame.quit()
