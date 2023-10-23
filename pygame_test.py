@@ -83,5 +83,71 @@ while loop:
             loop=False
     pygame.display.update()
 
+import pygame 
+
+pygame.init()
+
+#set up display
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 450
+#16:9^
+screen = pygame.display.set_mode([SCREEN_WIDTH,SCREEN_HEIGHT])
+pygame.display.set_caption("MazeMania")
+
+#define color
+
+black = (0, 0, 0)
+white = (255, 255, 255)
+
+
+#created the outline and color of maze
+
+
+level_1 = [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xS    x           x   x   x     xx",  
+    "x  x  x  x  x  x        x   xxxxxx",  
+    "x  x  x  x  x  x  x  xxxx  xxxx xx",
+    "x     x  x  x  x     x  x  xx    x", 
+    "x  x  x  x  x  x  x  x  x        x", 
+    "x  xx   xx  x   xxx     x       xx",
+    "x xxxxxxxx xxxx  xxxxx  xxxxxxx xx",
+    "x  xxxx    xxxxx     x  xxx     xx",
+    "x    xxx  xxx  xxxxxxx  xxx      x",
+    "x    xxx            xx  xxxxxxxxxx",
+    "xxxx  xx  xxxxxxxxx xx           x",
+    "x     xx            xx        E  x",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+
+
+
+
+]
+
+TILE_SIZE = 24
+
+
+def draw_maze(level):
+    for y, row in enumerate(level):
+        for x, cell in enumerate(row):
+            if cell == "x":
+               pygame.draw.rect(screen, white, (x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+running = True
+while running:
+            for event in pygame.event.get():
+                 if event.type == pygame.QUIT:
+                     running = False
+
+            screen.fill(black)  
+            draw_maze(level_1)    
+            pygame.display.update()
+
+    
+
+
+pygame.quit()
+
 
 pygame.quit()
