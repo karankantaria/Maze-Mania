@@ -95,9 +95,18 @@ def player_animation():
 #For enemy animation
 def enemy_animation():
     pass
-#Could be done in check_collision
-def coin_collect():
-    pass
+
+#Could be done in check_collision and creating a coin
+class Coin(pygame.sprite.Sprite):
+  def__init__(self, x, y):
+   super().__init__()
+   self.image = pygame.Surface((1,1)) # Changing the size of the coin 
+   self.image.fill((215, 185, 0)) # Need to find the right colour for coin
+   self.rect = self.image.get.rect() 
+   self.rect.center = (x, y)
+ 
+ #Create to a group to hold all the coin for Player
+ coins_group = pygame.sprite.Group()
 
 
 black = (0, 0, 0)
