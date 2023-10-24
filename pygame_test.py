@@ -113,20 +113,22 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 
 level_1 = [
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "xS    x           x   x   x     xx",  
-    "x  x  x  x  x  x        x   xxxxxx",  
-    "x  x  x  x  x  x  x  xxxx  xxxx xx",
-    "x     x  x  x  x     x  x  xx    x", 
-    "x  x  x  x  x  x  x  x  x        x", 
-    "x  xx   xx  x   xxx     x       xx",
-    "x xxxxxxxx xxxx  xxxxx  xxxxxxx xx",
-    "x  xxxx    xxxxx     x  xxx     xx",
-    "x    xxx  xxx  xxxxxxx  xxx      x",
-    "x    xxx            xx  xxxxxxxxxx",
-    "xxxx  xx  xxxxxxxxx xx           x",
-    "x     xx            xx        E  x",
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "x           xx                  x      x",
+    "x           xx                  x      x",
+    "x    xx                     x   x  xx  x", 
+    "x               xxxxxxx  x  x      xx  x", 
+    "x           x   xxxxxxx  x  x      xx  x",
+    "x  xxxxxx   x       xxx  x  xxxx   xx  x",
+    "x    xxx    x       xxx  x  xx     xx  x",
+    "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
+    "xxx  xxx            xxx  x  xxxxxxxxxxxx",
+    "xxx  xxx            xxx  x             x",
+    "xxx  xxx  xxxxxxxx  xxx  x            Ex",
+    "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
+    "x    xxx            xxx                x",
+    "xS   xxxxxxxxxxxxxxxxxx                x",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
 
 
