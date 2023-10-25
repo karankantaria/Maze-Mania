@@ -2,7 +2,7 @@ import pygame
 import os
 import math
 
-
+#Monday lecture nic day talked about djikstra's algorithm, we can use A* instead which is just dji's but with a heuristic
 
 
 class enemy(pygame.sprite.Sprite):
