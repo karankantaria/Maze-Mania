@@ -21,20 +21,22 @@ PLAYER_COMP = pygame.transform.rotate(pygame.transform.scale(PLAYER_IMAGE, (PLAY
 
 MAZE_WALL=pygame.image.load(os.path.join('Assets', 'maze_wall_test.png'))
 
-ENEMY_IMAGE = pygame.image.load(os.path.join('Assets', 'monster_test.png'))
-ENEMY_WIDTH = 20
-ENEMY_HEIGHT = 20
+ENEMY_IMAGE = pygame.image.load(os.path.join('Assets', 'monster2_test.png'))
+ENEMY_WIDTH = 30
+ENEMY_HEIGHT = 60
 ENEMY_COMP = pygame.transform.rotate(pygame.transform.scale(ENEMY_IMAGE, (ENEMY_WIDTH, ENEMY_HEIGHT)), 0)
 
 #Creating a class for player the main character
 class Player(pygame.sprite.Sprite):
   
-  def __init__(self,width, height, speed, max_health,player_image,x,y):
+  def __init__(self,width, height, speed, max_health,player_image,x,y,health=100):
     #self.rect = pygame.Rect(2, 2, width, height) # linking pygame
     self.image=player_image
-    self.rect=self.image.get_rect()
     self.speed = speed # Creating the variable 
     self.max_health = max_health
+    self.health=health
+
+    self.rect=self.image.get_rect()
     self.rect.width = width
     self.rect.height = height
     self.rect.x=x
@@ -66,7 +68,7 @@ def draw_maze(level):
 
 #Enemy behaviour
 class enemy(pygame.sprite.Sprite):
-    def __init__(self,enemy_width,enemy_height,enemy_image,x,y,):
+    def __init__(self,enemy_width,enemy_height,enemy_image,x,y):
         self.image=enemy_image
         self.rect=self.image.get_rect()
         self.rect.width = enemy_width
@@ -77,8 +79,8 @@ class enemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         WINDOW = pygame.display.get_surface()
 
-    def enemy_move():
-        pass
+def enemy_move():
+    pass
 
 #Loading level
 def load_level():
@@ -95,6 +97,17 @@ def player_animation():
 #For enemy animation
 def enemy_animation():
     pass
+
+def draw_lives(entity):
+    #display_surface = pygame.display.set_mode((X, Y))#
+    health=str(entity.health)
+    #print(health)
+    font = pygame.font.Font('freesansbold.ttf', 32) 
+    text = font.render(health, True, black)
+    textRect = text.get_rect()
+    textRect.center = (100,500)
+    WINDOW.blit(text, textRect)
+
 
 #Could be done in check_collision and creating a coin
 class Coin(pygame.sprite.Sprite):
@@ -114,7 +127,7 @@ white = (255, 255, 255)
 
 level_1 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x           xx                  x      x",
+    "x  S        xx                  x      x",
     "x           xx                  x      x",
     "x    xx                     x   x  xx  x", 
     "x               xxxxxxx  x  x      xx  x", 
@@ -124,10 +137,10 @@ level_1 = [
     "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
     "xxx  xxx            xxx  x  xxxxxxxxxxxx",
     "xxx  xxx            xxx  x             x",
-    "xxx  xxx  xxxxxxxx  xxx  x            Ex",
+    "xxx  xxx  xxxxxxxx  xxx  x             x",
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
-    "x    xxx            xxx                x",
-    "xS   xxxxxxxxxxxxxxxxxx                x",
+    "x    xxx            xxx         E      x",
+    "x   xxxxxxxxxxxxxxxxxx          P      x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
 
@@ -144,7 +157,7 @@ for y, row in enumerate(level_1):
     for x, char in enumerate(row):
         if char == "S":
             player_x, player_y = x * TILE_SIZE, y * TILE_SIZE
-        elif char == "E":
+        elif char == "P":
             enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
 
 player_init = Player(20, 20, 100,50,PLAYER_IMAGE,player_x,player_y) #Creating a player as a object
@@ -171,7 +184,7 @@ while loop:
     #pygame.draw.rect(WINDOW, BLACK, WIN_EDGE)
     #pygame.draw.rect(WINDOW, (255, 0, 0), player_init.rect)
     WINDOW.blit(PLAYER_COMP, (player_init.rect.x, player_init.rect.y))
-    WINDOW.blit(ENEMY_IMAGE, (enemy_init.rect.x, enemy_init.rect.y))
+    WINDOW.blit(ENEMY_COMP, (enemy_init.rect.x, enemy_init.rect.y))
     #WINDOW.fill(black) 
       
     draw_maze(level_1) 
@@ -184,7 +197,7 @@ while loop:
         if player_init.rect.colliderect(wall_rect):
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
-
+    draw_lives(player_init)
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
         print("Congratulations! You reached the exit!")
 
