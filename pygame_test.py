@@ -1,6 +1,7 @@
 import pygame 
 import os
 import math
+from handle_enemy import enemy, enemy_move, enemy_collision
 
 pygame.init()
 # WINDOW_WIDTH = 704
@@ -67,27 +68,7 @@ def draw_maze(level):
                 WALL_Y = y * TILE_SIZE
                 WINDOW.blit(MAZE_WALL, (WALL_X, WALL_Y))
 
-#Enemy behaviour
-class enemy(pygame.sprite.Sprite):
-    def __init__(self,enemy_width,enemy_height,enemy_image,x,y):
-        self.image=enemy_image
-        self.rect=self.image.get_rect()
-        self.rect.width = enemy_width
-        self.rect.height = enemy_height
-        self.rect.x=x
-        self.rect.y=y
 
-        pygame.sprite.Sprite.__init__(self)
-        WINDOW = pygame.display.get_surface()
-
-def enemy_move(player_rect,enemy_rect):
-    player_x, player_y = player_rect.center
-    enemy_x, enemy_y = enemy_rect.center
-    angle = math.atan2(player_y - enemy_y, player_x - enemy_x)
-    speed = 2 
-    enemy_x += speed * math.cos(angle)
-    enemy_y += speed * math.sin(angle)
-    enemy_rect.center = (enemy_x, enemy_y)
 
 
 #Loading level
@@ -206,6 +187,7 @@ while loop:
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
     enemy_move(player_init.rect,enemy_init.rect)
+    enemy_collision(player_init.rect,enemy_init.rect,player_init)
     draw_lives(player_init)
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
         print("Congratulations! You reached the exit!")
