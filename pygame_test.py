@@ -1,5 +1,6 @@
 import pygame 
 import os
+import math
 
 pygame.init()
 # WINDOW_WIDTH = 704
@@ -79,8 +80,15 @@ class enemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         WINDOW = pygame.display.get_surface()
 
-def enemy_move():
-    pass
+def enemy_move(player_rect,enemy_rect):
+    player_x, player_y = player_rect.center
+    enemy_x, enemy_y = enemy_rect.center
+    angle = math.atan2(player_y - enemy_y, player_x - enemy_x)
+    speed = 2 
+    enemy_x += speed * math.cos(angle)
+    enemy_y += speed * math.sin(angle)
+    enemy_rect.center = (enemy_x, enemy_y)
+
 
 #Loading level
 def load_level():
@@ -197,6 +205,7 @@ while loop:
         if player_init.rect.colliderect(wall_rect):
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
+    enemy_move(player_init.rect,enemy_init.rect)
     draw_lives(player_init)
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
         print("Congratulations! You reached the exit!")
