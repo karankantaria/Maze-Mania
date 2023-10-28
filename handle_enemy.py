@@ -1,3 +1,4 @@
+from typing import Any
 import pygame 
 import os
 import math
@@ -17,6 +18,25 @@ class enemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         WINDOW = pygame.display.get_surface()
 
+
+class Node():
+    def __innit__(self):
+        pass
+
+    def calc_cost(self,goal):
+        pass
+
+    def print_node(self):
+        pass
+
+    def get_neighbours(self):
+        pass
+
+    def get_current_node(self):
+        pass
+
+
+
 def enemy_move(player_rect,enemy_rect):
     player_x, player_y = player_rect.center
     enemy_x, enemy_y = enemy_rect.center
@@ -29,3 +49,12 @@ def enemy_move(player_rect,enemy_rect):
 def enemy_collision(player_rect,enemy_rect,player_health): 
     if player_rect.colliderect(enemy_rect):
         player_health.health -= 1
+
+def a_star_pathfinding(player,enemy,level):
+    enemy_x, enemy_y = enemy.rect.center
+    player_x, player_y = player.rect.center
+    start= Node(enemy_x,enemy_y)
+    node = Node(enemy_x,enemy_y)
+    goal = Node(player_x,player_y)
+    current_node = start
+

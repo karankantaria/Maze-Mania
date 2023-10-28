@@ -1,7 +1,7 @@
 import pygame 
 import os
 import math
-from handle_enemy import enemy, enemy_move, enemy_collision
+from handle_enemy import enemy, enemy_move, enemy_collision, Node, a_star_pathfinding
 
 pygame.init()
 # WINDOW_WIDTH = 704
