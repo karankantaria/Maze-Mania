@@ -1,7 +1,7 @@
 import pygame 
 import os
 import math
-from handle_enemy import enemy, enemy_move, enemy_collision, Node, a_star_pathfinding
+from handle_enemy import enemy, enemy_move, enemy_collision, Node
 
 pygame.init()
 # WINDOW_WIDTH = 704
@@ -47,7 +47,6 @@ class Player(pygame.sprite.Sprite):
     pygame.sprite.Sprite.__init__(self)
     WINDOW = pygame.display.get_surface()
 
-#Updating moveing block to block
 def movement(entity,key_press):
     player=entity
     if move[pygame.K_a]:
@@ -150,7 +149,7 @@ for y, row in enumerate(level_1):
             enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
 
 player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y) #Creating a player as a object
-enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y)
+enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,level_1)
 
 maze_walls = []  #For collisions with player
 for y, row in enumerate(level_1):
@@ -186,7 +185,8 @@ while loop:
         if player_init.rect.colliderect(wall_rect):
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
-    enemy_move(player_init.rect,enemy_init.rect)
+    #enemy_move(player_init.rect,enemy_init.rect)
+    enemy_init.enemy_to_player(player_init.rect, maze_walls)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
     draw_lives(player_init)
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
