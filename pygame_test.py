@@ -21,6 +21,9 @@ PLAYER_WIDTH = 15
 PLAYER_HEIGHT = 30
 PLAYER_COMP = pygame.transform.rotate(pygame.transform.scale(PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 0)#rotate redundant for now
 
+COIN_IMAGE = pygame.image.load(os.path.join('Assets', 'pngtree-glossy-golden-coin-icon-png-image_2898883.jpg'))# linking coin images with a asset
+player_socre = 0 #Start of the game the player will have 0 ponits
+
 MAZE_WALL=pygame.image.load(os.path.join('Assets', 'maze_wall_test.png'))
 
 ENEMY_IMAGE = pygame.image.load(os.path.join('Assets', 'monster2_test.png'))
@@ -98,19 +101,35 @@ def draw_lives(entity):
     WINDOW.blit(text, textRect)
 
 
-#Could be done in check_collision and creating a coin
+# Could be done in check_collision and creating a coin
 class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.Surface((1,1)) # Changing the size of the coin 
-        self.image.fill((215, 185, 0)) # Need to find the right colour for coin
-        self.rect = self.image.get.rect() 
+        self.image = COIN_IMAGE
+        self.rect = self.image.get.rect() # Using the coin image from assets
         self.rect.center = (x, y)
     
         #Create to a group to hold all the coin for Player
         coins_group = pygame.sprite.Group()
+# Function to check for collisions with the player and coin
+  def coin_collision():
+    global player_score
+    collected_coins=pygamesprite.spritecollide(player_init, coins_group, True)       
+    player.score +=len(collected_coins)
 
+# When player pick up coin it will increase score by one   
+if coin_collision
+   score += len(coin_collision) #Every time player touch the coin add one to the score 
+   
+# On the screen it will show the score 
+  font = pygame.font.Font(None, 36)
+  score_text = font.render(f"score: {score}", True, (255,255,255)) #Putting score in a dict and changing font to white
+WINDOW,blit(score_text, (10,10)) # Size of text
 
+  pygame.display.update()
+
+ 
 black = (0, 0, 0)
 white = (255, 255, 255)
 
