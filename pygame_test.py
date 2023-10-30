@@ -136,6 +136,8 @@ level_1 = [
 
 
 ]
+#creating level 2 
+
 
 TILE_SIZE = 24
 
