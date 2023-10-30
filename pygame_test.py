@@ -17,15 +17,15 @@ pygame.display.set_caption("TCA2")
 BACKGROUND_TEST = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Grass_Sample.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 PLAYER_IMAGE = pygame.image.load(os.path.join('Assets', 'test_sprite.png'))
-PLAYER_WIDTH = 30
-PLAYER_HEIGHT = 60
+PLAYER_WIDTH = 15
+PLAYER_HEIGHT = 30
 PLAYER_COMP = pygame.transform.rotate(pygame.transform.scale(PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 0)#rotate redundant for now
 
 MAZE_WALL=pygame.image.load(os.path.join('Assets', 'maze_wall_test.png'))
 
 ENEMY_IMAGE = pygame.image.load(os.path.join('Assets', 'monster2_test.png'))
-ENEMY_WIDTH = 30
-ENEMY_HEIGHT = 60
+ENEMY_WIDTH = 15
+ENEMY_HEIGHT = 30
 ENEMY_COMP = pygame.transform.rotate(pygame.transform.scale(ENEMY_IMAGE, (ENEMY_WIDTH, ENEMY_HEIGHT)), 0)
 
 #Creating a class for player the main character
@@ -149,7 +149,7 @@ for y, row in enumerate(level_1):
         elif char == "P":
             enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
 
-player_init = Player(20, 20, 100,50,PLAYER_IMAGE,player_x,player_y) #Creating a player as a object
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y) #Creating a player as a object
 enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y)
 
 maze_walls = []  #For collisions with player
