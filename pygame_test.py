@@ -137,7 +137,25 @@ level_1 = [
 
 ]
 #creating level 2 
-
+level_2 = [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "x                        xx            x",
+    "x    xxx                 xx     xxxxxxxx",
+    "x    xxxxxxxxxxxxxxxx    xx     x E    x",
+    "x                   x    xx     x      x",
+    "x               x   x    xx     xxx    x",
+    "x   xxxxxxxxxxxxx   x    xx     xxx    x",
+    "x   xx              x    xx     xxx    x",
+    "xxxxxx              x    xx            x",
+    "x        xxxxxxxxxxxx    xx    xxxxxxxxx",
+    "x        xxxx                  x   x   x",
+    "x   xx   xxxx                  x   x   x",
+    "x   xx          xxxxxxxxxxxxxxxx   x   x",
+    "x   xx          xxxx               x   x",
+    "x   xxxxxxxxxxxxxxxx     x             x",
+    "x S                      xxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+]
 
 TILE_SIZE = 24
 
@@ -191,8 +209,10 @@ while loop:
     enemy_move(player_init.rect,enemy_init.rect)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
     draw_lives(player_init)
+
+  #automatic transition from level 1 to level 2
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
-        print("Congratulations! You reached the exit!")
+        level_1 == level_2
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
