@@ -1,5 +1,6 @@
 import pygame 
 import os
+import time  # Getting the game time imported
 import math
 from handle_enemy import enemy, enemy_move, enemy_collision, Node, a_star_pathfinding
 
@@ -129,6 +130,23 @@ WINDOW,blit(score_text, (10,10)) # Size of text
 
   pygame.display.update()
 
+# Creating the time for the maze
+  pygame.init()
+  start_time = time.time() # The time the player starting and with the current time
+  time_limit = 3 * 60 # 60 seconds times 3 equals 3 mintues 
+
+while loop
+
+    elapsed_time = time.time() - start_time # The elapsed time will be calculate 
+    if elapsed_time > time_limit
+    print("Better luck next time") # When going the past the time limit this message will show up 
+    break # It will end the loop when past the set time limit 
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            loop = False       # Need to write this code at the end 
+
+pygame.quit()
  
 black = (0, 0, 0)
 white = (255, 255, 255)
