@@ -197,6 +197,26 @@ level_1_no_obstacle = [
 
 
 ]
+#creating level 2 
+level_2 = [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "x                        xx            x",
+    "x    xxx                 xx     xxxxxxxx",
+    "x    xxxxxxxxxxxxxxxx    xx     x E    x",
+    "x                   x    xx     x      x",
+    "x               x   x    xx     xxx    x",
+    "x   xxxxxxxxxxxxx   x    xx     xxx    x",
+    "x   xx              x    xx     xxx    x",
+    "xxxxxx              x    xx            x",
+    "x        xxxxxxxxxxxx    xx    xxxxxxxxx",
+    "x        xxxx                  x   x   x",
+    "x   xx   xxxx                  x   x   x",
+    "x   xx          xxxxxxxxxxxxxxxx   x   x",
+    "x   xx          xxxx               x   x",
+    "x   xxxxxxxxxxxxxxxx     x             x",
+    "x S                      xxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+]
 
 TILE_SIZE = 24
 
@@ -249,7 +269,12 @@ while loop:
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
     enemy_init.enemy_to_player(player_init.rect, maze_walls)
     draw_lives(player_init)
+
+    
+  #automatic transition from level 1 to level 2
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
+        level_1 == level_2
+
         print("Congratulations! You reached the exit!")
     print("Player Position:", player_init.rect.x, player_init.rect.y)
     print("Enemy Position:", enemy_init.rect.x, enemy_init.rect.y)
