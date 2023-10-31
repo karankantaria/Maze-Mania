@@ -3,7 +3,7 @@ import pygame
 import os
 import time  # Getting the game time imported
 import math
-from handle_enemy import enemy, enemy_collision, Node
+from handle_enemy import enemy, enemy_move, enemy_collision, Node, a_star_pathfinding
 
 pygame.init()
 # WINDOW_WIDTH = 704
@@ -24,6 +24,7 @@ PLAYER_HEIGHT = 30
 PLAYER_COMP = pygame.transform.rotate(pygame.transform.scale(PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 0)#rotate redundant for now
 
 COIN_IMAGE = pygame.image.load(os.path.join('Assets', 'pngtree-glossy-golden-coin-icon-png-image_2898883.jpg'))# linking coin images with a asset
+player_score = 1 #Start of the game the player will have 0 ponits
 MAZE_WALL=pygame.image.load(os.path.join('Assets', 'maze_wall_test.png'))
 
 ENEMY_IMAGE = pygame.image.load(os.path.join('Assets', 'monster2_test.png'))
@@ -34,13 +35,12 @@ ENEMY_COMP = pygame.transform.rotate(pygame.transform.scale(ENEMY_IMAGE, (ENEMY_
 #Creating a class for player the main character
 class Player(pygame.sprite.Sprite):
   
-  def __init__(self,width, height, speed, max_health,player_image,x,y,health=100,p_score=0):
+  def __init__(self,width, height, speed, max_health,player_image,x,y,health=100):
     #self.rect = pygame.Rect(2, 2, width, height) # linking pygame
     self.image=player_image
     self.speed = speed # Creating the variable 
     self.max_health = max_health
     self.health=health
-    self.score=p_score
 
     self.rect=self.image.get_rect()
     self.rect.width = width
@@ -51,6 +51,7 @@ class Player(pygame.sprite.Sprite):
     pygame.sprite.Sprite.__init__(self)
     WINDOW = pygame.display.get_surface()
 
+#Updating moveing block to block
 def movement(entity,key_press):
     player=entity
     if move[pygame.K_a]:
@@ -109,21 +110,54 @@ class Coin(pygame.sprite.Sprite):
         self.image = COIN_IMAGE
         self.rect = self.image.get.rect() # Using the coin image from assets
         self.rect.center = (x, y)
-    
+
+   
         #Create to a group to hold all the coin for Player
-# # Function to check for collisions with the player and coin
-def coin_collision(player_init, coins_group):
-    collected_coins=pygame.sprite.spritecollide(player_init, coins_group, True)       
-    player_init.score +=len(collected_coins)
+        coins_group = pygame.sprite.Group()
+# Function to check for collisions with the player and coin
+def collected_coins():
+    global player_score
+    collected_coins= pygame.sprite.spritecollide(player_init, pygame.sprite.Group, True)       
+    player_score += len(collected_coins)
+
+# When player pick up coin it will increase score by one   
+
+   
+# On the screen it will show the score 
+font = pygame.font.Font(None, 36)
+score_text = font.render(f"score: {player_score}", True, (255,255,255)) #Putting score in a dict and changing font to white
+WINDOW.blit(score_text, (10,10)) # Size of text
+
+pygame.display.update()
+
+# Creating the time for the maze
+pygame.init()
+start_time = time.time() # The time the player starting and with the current time
+time_limit = 3 * 60 # 60 seconds times 3 equals 3 mintues 
+
+loop =True
+
+while loop:
+
+    elapsed_time = time.time() - start_time # The elapsed time will be calculate 
+    if elapsed_time > time_limit:
+      print("Better luck next time") # When going the past the time limit this message will show up 
+    break # It will end the loop when past the set time limit 
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            loop = False       # Need to write this code at the end 
+
+
+
 black = (0, 0, 0)
 white = (255, 255, 255)
 
 level_1 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "x  S        xx                  x      x",
-    "x           xx                  x      x",
-    "x           xx         P        x      x",
-    "x    xx                     x   x  xx  x", 
+    "x           xx                 x       x",
+    "x    xx           C         x   x  xx  x", 
     "x               xxxxxxx  x  x      xx  x", 
     "x           x   xxxxxxx  x  x      xx  x",
     "x  xxxxxx   x       xxx  x  xxxx   xx  x",
@@ -134,56 +168,12 @@ level_1 = [
     "xxx  xxx  xxxxxxxx  xxx  x             x",
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
     "x    xxx            xxx         E      x",
-    "x   xxxxxxxxxxxxxxxxxx                 x",
+    "x   xxxxxxxxxxxxxxxxxx    C     P      x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
 
 
 
-]
-
-
-level_1_no_obstacle = [
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x           xx                  x      x",
-    "x           xx                  x      x",
-    "x    xx                     x   x  xx  x", 
-    "x               xxxxxxx  x  x      xx  x", 
-    "x           x   xxxxxxx  x  x      xx  x",
-    "x  xxxxxx   x       xxx  x  xxxx   xx  x",
-    "x    xxx    x       xxx  x  xx     xx  x",
-    "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
-    "xxx  xxx            xxx  x  xxxxxxxxxxxx",
-    "xxx  xxx            xxx  x             x",
-    "xxx  xxx  xxxxxxxx  xxx  x             x",
-    "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
-    "x    xxx            xxx                x",
-    "x   xxxxxxxxxxxxxxxxxx                 x",
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-
-
-
-
-]
-#creating level 2 
-level_2 = [
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x                        xx            x",
-    "x    xxx                 xx     xxxxxxxx",
-    "x    xxxxxxxxxxxxxxxx    xx     x E    x",
-    "x                   x    xx     x      x",
-    "x               x   x    xx     xxx    x",
-    "x   xxxxxxxxxxxxx   x    xx     xxx    x",
-    "x   xx              x    xx     xxx    x",
-    "xxxxxx              x    xx            x",
-    "x        xxxxxxxxxxxx    xx    xxxxxxxxx",
-    "x        xxxx                  x   x   x",
-    "x   xx   xxxx                  x   x   x",
-    "x   xx          xxxxxxxxxxxxxxxx   x   x",
-    "x   xx          xxxx               x   x",
-    "x   xxxxxxxxxxxxxxxx     x             x",
-    "x S                      xxxxxxxxxxxxxxx",
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 ]
 
 TILE_SIZE = 24
@@ -198,9 +188,9 @@ for y, row in enumerate(level_1):
         elif char == "P":
             enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
 
-player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,0) #Creating a player as a object
-enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,level_1_no_obstacle)
-coins_group = pygame.sprite.Group()
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y) #Creating a player as a object
+enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y)
+
 maze_walls = []  #For collisions with player
 for y, row in enumerate(level_1):
     for x, cell in enumerate(row):
@@ -208,18 +198,14 @@ for y, row in enumerate(level_1):
             wall_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
             maze_walls.append(wall_rect)
 
-start_time=time.time()
-time_limit=3*60
+
 while loop:
-    WINDOW.fill(BLACK)
-    elapsed_time = time.time() - start_time # The elapsed time will be calculate 
-    if elapsed_time > time_limit:
-        pass
 
     old_player_x = player_init.rect.x
     old_player_y = player_init.rect.y
     old_enemy_x = enemy_init.rect.x
     old_enemy_y = enemy_init.rect.y 
+
     #WINDOW.fill((0,0,0))
     # pygame.draw.rect(WINDOW,(50,50,50),Player)
     WINDOW.blit(BACKGROUND_TEST, (0, 0))
@@ -230,6 +216,7 @@ while loop:
     #WINDOW.fill(black) 
       
     draw_maze(level_1) 
+
     move=pygame.key.get_pressed()
     if move:
         movement(player_init.rect,move)
@@ -238,48 +225,36 @@ while loop:
         if player_init.rect.colliderect(wall_rect):
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
+    enemy_move(player_init.rect,enemy_init.rect)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
-    enemy_init.enemy_to_player(player_init.rect, maze_walls)
     draw_lives(player_init)
-
-    if coin_collision(player_init,coins_group):
-        player_init.score += len(coin_collision) #Every time player touch the coin add one to the score 
-        
-        # On the screen it will show the score 
-        font = pygame.font.Font(None, 36)
-        score_text = font.render(f"score: {player_init.score}", True, (255,255,255)) #Putting score in a dict and changing font to white
-        WINDOW.blit(score_text, (10,10)) # Size of text
-
-        pygame.display.update()
-
-        # Creating the time for the maze
-        pygame.init()
-        start_time = time.time() # The time the player starting and with the current time
-        time_limit = 3 * 60 # 60 seconds times 3 equals 3 mintues 
-    
-  #automatic transition from level 1 to level 2
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
-        level_1 = level_2
-        for y, row in enumerate(level_2):
-            for x, char in enumerate(row):
-                if char == "S":
-                    player_init.rect.x, player_init.rect.y = x * TILE_SIZE, y * TILE_SIZE
-                elif char == "P":
-                    enemy_init.rect.x, enemy_init.rect.y = x * TILE_SIZE, y * TILE_SIZE
-
         print("Congratulations! You reached the exit!")
-    print("Player Position:", player_init.rect.x, player_init.rect.y)
-    print("Enemy Position:", enemy_init.rect.x, enemy_init.rect.y)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             loop=False
-    
             
     pygame.display.update()
 
     
 
+loop=True
 
+for y, row in enumerate(level_1):
+        for x, Coin in enumerate(row):
+         if Coin == "C":
+            player_x, player_y = x * TILE_SIZE, y * TILE_SIZE
+         elif char == "P":
+            enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
+    
 
 
 pygame.quit()
+
+
+    
+
+
+
+
