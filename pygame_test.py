@@ -3,7 +3,7 @@ import pygame
 import os
 import time  # Getting the game time imported
 import math
-from handle_enemy import enemy, enemy_move, enemy_collision, Node, a_star_pathfinding
+from handle_enemy import enemy, enemy_collision, Node
 
 pygame.init()
 # WINDOW_WIDTH = 704
@@ -51,7 +51,6 @@ class Player(pygame.sprite.Sprite):
     pygame.sprite.Sprite.__init__(self)
     WINDOW = pygame.display.get_surface()
 
-#Updating moveing block to block
 def movement(entity,key_press):
     player=entity
     if move[pygame.K_a]:
@@ -154,7 +153,8 @@ white = (255, 255, 255)
 level_1 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "x  S        xx                  x      x",
-    "x           xx                 x      x",
+    "x           xx                  x      x",
+    "x           xx         P        x      x",
     "x    xx                     x   x  xx  x", 
     "x               xxxxxxx  x  x      xx  x", 
     "x           x   xxxxxxx  x  x      xx  x",
@@ -166,7 +166,31 @@ level_1 = [
     "xxx  xxx  xxxxxxxx  xxx  x             x",
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
     "x    xxx            xxx         E      x",
-    "x   xxxxxxxxxxxxxxxxxx          P      x",
+    "x   xxxxxxxxxxxxxxxxxx                 x",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+
+
+
+
+]
+
+
+level_1_no_obstacle = [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "x           xx                  x      x",
+    "x           xx                  x      x",
+    "x    xx                     x   x  xx  x", 
+    "x               xxxxxxx  x  x      xx  x", 
+    "x           x   xxxxxxx  x  x      xx  x",
+    "x  xxxxxx   x       xxx  x  xxxx   xx  x",
+    "x    xxx    x       xxx  x  xx     xx  x",
+    "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
+    "xxx  xxx            xxx  x  xxxxxxxxxxxx",
+    "xxx  xxx            xxx  x             x",
+    "xxx  xxx  xxxxxxxx  xxx  x             x",
+    "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
+    "x    xxx            xxx                x",
+    "x   xxxxxxxxxxxxxxxxxx                 x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
 
@@ -187,7 +211,7 @@ for y, row in enumerate(level_1):
             enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
 
 player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y) #Creating a player as a object
-enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y)
+enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,level_1_no_obstacle)
 
 maze_walls = []  #For collisions with player
 for y, row in enumerate(level_1):
@@ -203,7 +227,7 @@ while loop:
     old_player_y = player_init.rect.y
     old_enemy_x = enemy_init.rect.x
     old_enemy_y = enemy_init.rect.y 
-
+    WINDOW.fill(BLACK)
     #WINDOW.fill((0,0,0))
     # pygame.draw.rect(WINDOW,(50,50,50),Player)
     WINDOW.blit(BACKGROUND_TEST, (0, 0))
@@ -214,7 +238,6 @@ while loop:
     #WINDOW.fill(black) 
       
     draw_maze(level_1) 
-
     move=pygame.key.get_pressed()
     if move:
         movement(player_init.rect,move)
@@ -223,15 +246,17 @@ while loop:
         if player_init.rect.colliderect(wall_rect):
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
-    enemy_move(player_init.rect,enemy_init.rect)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
+    enemy_init.enemy_to_player(player_init.rect, maze_walls)
     draw_lives(player_init)
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
         print("Congratulations! You reached the exit!")
-
+    print("Player Position:", player_init.rect.x, player_init.rect.y)
+    print("Enemy Position:", enemy_init.rect.x, enemy_init.rect.y)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             loop=False
+    
             
     pygame.display.update()
 
