@@ -177,12 +177,12 @@ level_2 = [
     "x   xx              x    xx     xxx    x",
     "xxxxxx              x    xx            x",
     "x        xxxxxxxxxxxx    xx    xxxxxxxxx",
-    "x        xxxx                  x   x   x",
+    "x        xxxx                  x   x S x",
     "x   xx   xxxx                  x   x   x",
     "x   xx          xxxxxxxxxxxxxxxx   x   x",
     "x   xx          xxxx               x   x",
     "x   xxxxxxxxxxxxxxxx     x             x",
-    "x S                      xxxxxxxxxxxxxxx",
+    "x                        xxxxxxxxxxxxxxx",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 ]
 
