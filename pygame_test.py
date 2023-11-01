@@ -230,7 +230,7 @@ level_3 = [
   "x                           S x  E        x",
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   
-
+]
 TILE_SIZE = 24
 
 
