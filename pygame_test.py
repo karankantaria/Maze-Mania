@@ -115,6 +115,36 @@ class Coin(pygame.sprite.Sprite):
 def coin_collision(player_init, coins_group):
     collected_coins=pygame.sprite.spritecollide(player_init, coins_group, True)       
     player_init.score +=len(collected_coins)
+
+
+
+
+
+   #LOAD IMAGES
+
+start_image = pygame.image.load(os.path.join('6orceshd.png')).convert_alpha()
+
+start_image('6orceshd.png')
+
+
+#botton class
+
+class Button():
+    def __init__(self, x, y, image):
+        self.image= image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+    def draw(self):
+        WINDOW.blit (self.image,(self.rect.x, self.rect.y))
+
+
+start_button = Button(100, 200, start_image)
+
+
+
+
+
 black = (0, 0, 0)
 white = (255, 255, 255)
 
