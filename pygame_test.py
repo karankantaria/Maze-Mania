@@ -104,12 +104,13 @@ def draw_lives(entity):
 
 # Could be done in check_collision and creating a coin
 class Coin(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, COIN_IMAGE):
         super().__init__()
-        self.image = pygame.Surface((1,1)) # Changing the size of the coin 
-        self.image = COIN_IMAGE
-        self.rect = self.image.get.rect() # Using the coin image from assets
-        self.rect.center = (x, y)
+        self.image = pygame.transform.scale(COIN_IMAGE, (TILE_SIZE, TILE_SIZE))  # Getting the image to the coin class
+        self.rect = self.image.get_rect() 
+        self.rect.x = x
+        self.rect.y = y    
+
 
    
         #Create to a group to hold all the coin for Player
@@ -248,6 +249,29 @@ for y, row in enumerate(level_1):
          elif char == "P":
             enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
     
+coins_group = pygame.sprite.Group()
+for y, row in enumerate(level_1):   # The coin will show up in the first level of the maze
+    for x, cell in enumerate(row):
+        if cell == "C":            # making coin == to c
+            coin = Coin(x * TILE_SIZE, y * TILE_SIZE, COIN_IMAGE)  # The coin image will show and be place in the maze 
+            coins_group.add(coin)
+
+while loop:
+
+   
+
+    draw_coins(coins_group)  # it will show the coins on the screen
+
+    # the score will auto update when the coin picked
+    score_text = font.render(f"score: {player_score}", True, (255,255,255)) # it will show the player score on the top left in white text 
+    WINDOW.blit(score_text, (10,10))   
+
+    
+            
+    pygame.display.update()
+
+
+
 
 
 pygame.quit()
