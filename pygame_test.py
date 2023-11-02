@@ -8,8 +8,8 @@ from handle_enemy import enemy,  enemy_collision, Node
 pygame.init()
 # WINDOW_WIDTH = 704
 # WINDOW_HEIGHT = 320
-WINDOW_WIDTH = 1920
-WINDOW_HEIGHT = 1080
+WINDOW_WIDTH = 1180
+WINDOW_HEIGHT = 720
 #16:9^
 WINDOW=pygame.display.set_mode([WINDOW_WIDTH,WINDOW_HEIGHT])
 BLACK=(0,0,0)
@@ -26,6 +26,10 @@ COIN_WIDTH = 20
 COINT_HEIGHT = 20
 COIN_COMP=pygame.transform.rotate(pygame.transform.scale(COIN_IMAGE, (COIN_WIDTH, COINT_HEIGHT)), 0)
 
+HEALTH_IMAGE=pygame.image.load(os.path.join('Assets', 'healing_potion.png')).convert_alpha()
+HEALTH_WIDTH=20
+HEALTH_HEIGHT=20
+HEALTH_COMP=pygame.transform.rotate(pygame.transform.scale(HEALTH_IMAGE, (HEALTH_WIDTH, HEALTH_HEIGHT)), 0)
 
 
 BACKGROUND_TEST = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Grass_Sample.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -89,6 +93,10 @@ def draw_traps(traps_list):
     for trap in traps_list:
         WINDOW.blit(TRAP_COMP, (trap.rect.x, trap.rect.y))
 
+def draw_health_potion(health_potion_list):
+    for health_potion in health_potion_list:
+        WINDOW.blit(HEALTH_COMP, (health_potion.rect.x, health_potion.rect.y))
+
 def draw_lives(entity):
     #display_surface = pygame.display.set_mode((X, Y))#
     health=str(entity.health)
@@ -109,6 +117,14 @@ class Trap(pygame.sprite.Sprite):
     def __init__(self, x, y, TRAP_IMAGE):
         super().__init__()
         self.image = pygame.transform.scale(TRAP_IMAGE, (TILE_SIZE, TILE_SIZE)) # Getting the trap images from assets
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+class Health_Potion(pygame.sprite.Sprite):
+    def __init__(self, x, y, HEALTH_POTION_IMAGE):
+        super().__init__()
+        self.image = pygame.transform.scale(HEALTH_POTION_IMAGE, (TILE_SIZE, TILE_SIZE)) # Getting the trap images from assets
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -192,7 +208,7 @@ level_1 = [
     "x    xxx    x       xxx  x  xx     xx  x",
     "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
     "xxx  xxx            xxx  x  xxxxxxxxxxxx",
-    "xxx  xxx            xxx  x             x",
+    "xxx  xxx       H    xxx  x             x",
     "xxx  xxx  xxxxxxxx  xxx  x    T        x",
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
     "x    xxx            xxx                x",
@@ -237,7 +253,7 @@ level_2 = [
     "x                        x           C x",
     "x                        x             x",
     "x    xxx       T         x      xxxxxxxx",
-    "x    xxxxxxxxxxxxxxxx    x      x      x",
+    "x    xxxxxxxxxxxxxxxx    x      x  H   x",
     "x                   x    x      x      x",
     "x                   x    x      x      x",
     "x      T      x     x    x      x      x",
@@ -280,8 +296,8 @@ level_2_no_obstacle = [
 level_3 = [
 
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  "x                                        x      x",
-  "x                                        x      x",
+  "x                                        x H    x",
+  "x         S                              x      x",
   "x     x     x     T    xxxxxxxxx    xx   x      x",
   "x     x     x     x    x             x          x",
   "x     x     x     x    x      x       xxxxx     x",
@@ -297,11 +313,11 @@ level_3 = [
   "x     x     xxxxxxx     xxxxxxx     x     x     x",
   "x     x     x           xxx xxxx    x     x     x",
   "x     x     xxxxxxxxxxxxxx  C     xxx     x     x",
-  "x     x                           x       x     x",
-  "x     x                           x       x     x",
-  "x     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     x",
-  "x                               S x  E          x",
-  "x                               S x             x",
+  "x     x                           x             x",
+  "x     x                           x             x",
+  "x     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx      x",
+  "x                                 x  E          x",
+  "x                                 x             x",
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   
 ]
@@ -354,6 +370,7 @@ for y, row in enumerate(current_level):
 maze_walls = []  #For collisions with player
 traps_list = []
 coins_list = []
+health_list=[]
 for y, row in enumerate(current_level):
     for x, cell in enumerate(row):
         if cell == "x":
@@ -364,7 +381,10 @@ for y, row in enumerate(current_level):
             coins_list.append(coin)
         elif cell =="T":
             trap = Trap(x * TILE_SIZE, y * TILE_SIZE, TRAP_IMAGE)
-            traps_list.append(trap)    
+            traps_list.append(trap) 
+        elif cell =="H":
+            health_potion=Health_Potion(x * TILE_SIZE, y * TILE_SIZE, HEALTH_IMAGE)
+            health_list.append(health_potion)   
 player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,101,5) #Creating a player as a object
 enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
 
@@ -397,6 +417,7 @@ while loop:
     #WINDOW.fill(black) 
     draw_coins(coins_list)  # it will show the coins on the screen
     draw_traps(traps_list)
+    draw_health_potion(health_list)
     score_text = font.render(f"score: {player_init.score}", True, (255,255,255)) # it will show the player score on the top left in white text 
     WINDOW.blit(score_text, (10,10))  
     draw_maze(current_level) 
