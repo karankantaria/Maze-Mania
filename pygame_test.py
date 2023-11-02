@@ -238,9 +238,9 @@ level_1 = [
     "xxx  xxx            xxx  x  xxxxxxxxxxxx",
     "xxx  xxx       H    xxx Tx        T    x",
     "xxx  xxx Txxxxxxxx  xxx  x    T        x",
-    "xxx  xxx            xxxT xxxxxxxxxxxxxxx",
+    "xxx  xxx   F        xxxT xxxxxxxxxxxxxxx",
     "x    xxx            xxx                x",
-    "x   xxxxxxxxxxxxxxxxxx    C     E      x",
+    "x F xxxxxxxxxxxxxxxxxx    C     E      x",
     "x   xxxxxxxxxxxxxxxxxxx                x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
@@ -278,11 +278,11 @@ level_1_no_obstacle= [
 #creating level 2 
 level_2 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x F T                    x           C x",
-    "x   T                    x             x",
+    "x F T E                  x           C x",
+    "x   T               H    x             x",
     "x    xxx       T         x      xxxxxxxx",
     "x    xxxxxxxxxxxxxxxx    xT   TTx  H   x",
-    "x             T     x    xTTT  Tx      x",
+    "x      F      T     x    xTTT  Tx      x",
     "x                   x    x      x      x",
     "x      T      x   TTx    xT    Tx      x",
     "x    xxxxxxxxxxT    x    xT    Tx      x",
@@ -291,7 +291,7 @@ level_2 = [
     "x         xxxxxxxxxxx    x     xxxxxxxxx",
     "x         xxx                  x   x S x",
     "x    xT   xxx                T x   x   x",
-    "x    x          xxxxxxxxxxxxxxxx   x E x",
+    "x    x          xxxxxxxxxxxxxxxx   x   x",
     "x    x         C xxxx                  x",
     "x    xxxxxxxxxxxxxxx                   x",
     "x                                      x",
@@ -335,9 +335,9 @@ level_3 = [
   "x     x     x     x    xxxxxxx    T x   Txx  T  x",
   "x     xTT  Tx     x           x     x    xx     x",
   "x   TTx     x     x           x     x  TTxx     x",
-  "x     xT    xT    x   xxx     x     x    xx     x",
-  "x  TTTx    Tx     x   T x     x     xTT  xxxxxxxx",
-  "x  TC x     xF  TTx     x     x     x     x     x",
+  "x     xT    xT  TTx   xxx     x     x    xx     x",
+  "x  TTTx    TxTT   x   T x     x     xTT  xxxxxxxx",
+  "x  TC x     x  FTTx     x     x     x     x     x",
   "x     xT    xxxxxxx     xxxxxxx     x     x     x",
   "x     x    Tx           xxx xxxx    x     x     x",
   "x     x     xxxxxxxxxxxxxx  C     xxx     x     x",
@@ -415,8 +415,8 @@ for y, row in enumerate(current_level):
             health_potion=Health_Potion(x * TILE_SIZE, y * TILE_SIZE, HEALTH_IMAGE)
             health_list.append(health_potion) 
         elif cell == "F":
-            extra_time=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
-            extra_time_list.append(extra_time)  
+            extra_time_init=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
+            extra_time_list.append(extra_time_init)  
 player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,100,0,0) #Creating a player as a object
 #ssenemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
 
@@ -479,9 +479,9 @@ while loop:
             del health_list[health_potion]
             player_init.health_potions += 1
             break
-    for extra_time in range(len(extra_time_list)):
-        if player_init.rect.colliderect(extra_time_list[extra_time]):
-            del extra_time_list[extra_time]
+    for extra_time_count in range(len(extra_time_list)):
+        if player_init.rect.colliderect(extra_time_list[extra_time_count]):
+            del extra_time_list[extra_time_count]
             time_limit += 10
             break
     if move[pygame.K_e] and player_init.health_potions > 0:
@@ -529,8 +529,8 @@ while loop:
                     health_potion=Health_Potion(x * TILE_SIZE, y * TILE_SIZE, HEALTH_IMAGE)
                     health_list.append(health_potion)
                 elif cell == "F":
-                    extra_time=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
-                    extra_time_list.append(extra_time)
+                    extra_time_init=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
+                    extra_time_list.append(extra_time_init)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
