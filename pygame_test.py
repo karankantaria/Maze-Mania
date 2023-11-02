@@ -16,6 +16,17 @@ BLACK=(0,0,0)
 WIN_EDGE = pygame.Rect(WINDOW_WIDTH//2 - 5, 0, 10, WINDOW_HEIGHT)
 pygame.display.set_caption("TCA2")
 
+TRAP_IMAGE = pygame.image.load(os.path.join('Assets', 'pngwing.com.png'))
+
+
+
+COIN_IMAGE = pygame.image.load(os.path.join('Assets', 'pngtree-glossy-golden-coin-icon-png-image_2898883.jpg')).convert_alpha()# linking coin images with a asset
+COIN_WIDTH = 15
+COINT_HEIGHT = 15
+COIN_COMP=pygame.transform.rotate(pygame.transform.scale(COIN_IMAGE, (COIN_WIDTH, COINT_HEIGHT)), 0)
+
+
+
 BACKGROUND_TEST = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Grass_Sample.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 PLAYER_IMAGE = pygame.image.load(os.path.join('Assets', 'test_sprite.png'))
@@ -35,12 +46,13 @@ ENEMY_COMP = pygame.transform.rotate(pygame.transform.scale(ENEMY_IMAGE, (ENEMY_
 #Creating a class for player the main character
 class Player(pygame.sprite.Sprite):
   
-  def __init__(self,width, height, speed, max_health,player_image,x,y,health=100):
+  def __init__(self,width, height, speed, max_health,player_image,x,y,health,score):
     #self.rect = pygame.Rect(2, 2, width, height) # linking pygame
     self.image=player_image
     self.speed = speed # Creating the variable 
     self.max_health = max_health
     self.health=health
+    self.score=score
 
     self.rect=self.image.get_rect()
     self.rect.width = width
@@ -101,31 +113,34 @@ def draw_lives(entity):
     textRect.center = (100,500)
     WINDOW.blit(text, textRect)
 
-def draw_coins(coins_group):
-    for coin in coins_group:
-        WINDOW.blit(coin.image, coin.rect.topleft)
+def draw_coins(coins_list):
+    for coin in coins_list:
+        WINDOW.blit(COIN_COMP, (coin.rect.x, coin.rect.y))
 
 
+# Making Class for the trap 
+class Trap(pygame.sprite.Sprite):
+    def __init__(self, x, y, TRAP_IMAGE):
+        super().__init__()
+        self.image = pygame.transform.scale(TRAP_IMAGE, (TILE_SIZE, TILE_SIZE)) # Getting the trap images from assets
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
+def draw_traps(traps_group):
+    for trap in traps_group:
+        WINDOW.blit(trap.image, trap.rect.topleft)
 
 
 # Could be done in check_collision and creating a coin
 class Coin(pygame.sprite.Sprite):
-    def __init__(self, x, y, COIN_IMAGE):
+    def __init__(self, x, y, COIN_IMAGE): 
         super().__init__()
-        self.image = pygame.transform.scale(COIN_IMAGE, (TILE_SIZE, TILE_SIZE))  # Getting the imag to the coin
+        self.image = pygame.transform.scale(COIN_IMAGE, (TILE_SIZE, TILE_SIZE))  # Getting the image to the coin
         self.rect = self.image.get_rect() 
         self.rect.x = x
         self.rect.y = y    # 
-
-        
-        
-# When player pick up coin it will increase score by one   
-        self.image = pygame.Surface((1,1)) # Changing the size of the coin 
-        self.image = COIN_IMAGE
-        self.rect = self.image.get.rect() # Using the coin image from assets
-        self.rect.center = (x, y)
-    
-        #Create to a group to hold all the coin for Player
 # # Function to check for collisions with the player and coin
 def coin_collision(player_init, coins_group):
     collected_coins=pygame.sprite.spritecollide(player_init, coins_group, True)       
@@ -163,25 +178,7 @@ start_button = Button(100, 200, start_image)
 black = (0, 0, 0)
 white = (255, 255, 255)
 
-level_1 = [
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x           xx                  x      x",
-    "x           xx                  x      x",
-    "x           xx         P        x      x",
-    "x    xx                     x   x  xx  x", 
-    "x               xxxxxxx  x  x      xx  x", 
-    "x           x   xxxxxxx  x  x      xx  x",
-    "x  xxxxxx   x       xxx  x  xxxx   xx  x",
-    "x    xxx    x       xxx  x  xx     xx  x",
-    "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
-    "xxx  xxx            xxx  x  xxxxxxxxxxxx",
-    "xxx  xxx            xxx  x             x",
-    "xxx  xxx  xxxxxxxx  xxx  x             x",
-    "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
-    "x    xxx            xxx         E      x",
-    "x S xxxxxxxxxxxxxxxxxxx                x",
-    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-]
+
    
 # On the screen it will show the score 
 font = pygame.font.Font(None, 36)
@@ -218,14 +215,14 @@ level_1 = [
     "x  S        xx                  x      x",
     "x     C     xx      E          x       x",
     "x    xx                     x   x  xx  x", 
-    "x         C     xxxxxxx  x  x      xx  x", 
+    "x    T    C     xxxxxxx  x  x      xx  x", 
     "x           x   xxxxxxx  x  x      xx  x",
-    "x  xxxxxx   x       xxx  x  xxxx   xx  x",
+    "x  xxxxxx   x  T    xxx  x  xxxx   xx  x",
     "x    xxx    x       xxx  x  xx     xx  x",
     "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
     "xxx  xxx            xxx  x  xxxxxxxxxxxx",
     "xxx  xxx            xxx  x             x",
-    "xxx  xxx  xxxxxxxx  xxx  x             x",
+    "xxx  xxx  xxxxxxxx  xxx  x    T        x",
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
     "x    xxx            xxx                x",
     "x   xxxxxxxxxxxxxxxxxx    C     P      x",
@@ -337,26 +334,33 @@ current_level_no_obstacle=level_1_no_obstacle
 
 loop=True
 #Make player start at S
-for y, row in enumerate(level_1):
+traps_group = pygame.sprite.Group()
+coins_group = pygame.sprite.Group()
+for y, row in enumerate(current_level):
     for x, char in enumerate(row):
         if char == "S":
             player_x, player_y = x * TILE_SIZE, y * TILE_SIZE
         elif char == "P":
             enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
-        elif char == "C":
-            coin_x, coin_y = x * TILE_SIZE, y * TILE_SIZE
+        if char == "T":
+            trap = Trap(x * TILE_SIZE, y * TILE_SIZE, TRAP_IMAGE)
+            traps_group.add(trap)
 
 
 
 maze_walls = []  #For collisions with player
-for y, row in enumerate(level_1):
+traps_list = []
+coins_list = []
+for y, row in enumerate(current_level):
     for x, cell in enumerate(row):
         if cell == "x":
             wall_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
             maze_walls.append(wall_rect)
-player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,0) #Creating a player as a object
+        elif cell == "C":
+            coin = Coin(x * TILE_SIZE, y * TILE_SIZE, COIN_IMAGE)  # The coin image will show and be place in the maze 
+            coins_list.append(coin)
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,101,5) #Creating a player as a object
 enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
-coins_group = pygame.sprite.Group()
 
 
 
@@ -364,16 +368,6 @@ coins_group = pygame.sprite.Group()
 start_time=time.time()
 time_limit=3*60
 
-coins_group = pygame.sprite.Group()
-for y, row in enumerate(level_1):
-    for x, char in enumerate(row):
-        if char == "S":
-            player_x, player_y = x * TILE_SIZE, y * TILE_SIZE
-        elif char == "P":
-            enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
-        if cell == "C":            # making coin == to c
-            coin = Coin(x * TILE_SIZE, y * TILE_SIZE, COIN_IMAGE)  # The coin image will show and be place in the maze 
-            coins_group.add(coin)
 
   
   
@@ -392,10 +386,10 @@ while loop:
     WINDOW.blit(PLAYER_COMP, (player_init.rect.x, player_init.rect.y))
     WINDOW.blit(ENEMY_COMP, (enemy_init.rect.x, enemy_init.rect.y))
     #WINDOW.fill(black) 
-    draw_coins(coins_group)  # it will show the coins on the screen
-    score_text = font.render(f"score: {player_score}", True, (255,255,255)) # it will show the player score on the top left in white text 
+    draw_coins(coins_list)  # it will show the coins on the screen
+    score_text = font.render(f"score: {player_init.score}", True, (255,255,255)) # it will show the player score on the top left in white text 
     WINDOW.blit(score_text, (10,10))  
-    draw_maze(level_1) 
+    draw_maze(current_level) 
     
 
     move=pygame.key.get_pressed()
@@ -406,11 +400,23 @@ while loop:
         if player_init.rect.colliderect(wall_rect):
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
+
+    for coins in range(len(coins_list)):
+        if player_init.rect.colliderect(coins_list[coins]):
+            player_init.score += 1
+            del coins_list[coins]
+            break
+    trap_collision = pygame.sprite.spritecollide(player_init, traps_group, True)
+    if trap_collision:
+        player_init.health -= 25
+            
     enemy_init.enemy_to_player(player_init.rect,maze_walls)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
     draw_lives(player_init)
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
-        print("Congratulations! You reached the exit!")
+        if current_level==level_1:
+            current_level=level_2
+            current_level_no_obstacle=level_2_no_obstacle
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
