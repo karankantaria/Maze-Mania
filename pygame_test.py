@@ -27,8 +27,8 @@ COINT_HEIGHT = 20
 COIN_COMP=pygame.transform.rotate(pygame.transform.scale(COIN_IMAGE, (COIN_WIDTH, COINT_HEIGHT)), 0)
 
 HEALTH_IMAGE=pygame.image.load(os.path.join('Assets', 'healing_potion.png')).convert_alpha()
-HEALTH_WIDTH=20
-HEALTH_HEIGHT=20
+HEALTH_WIDTH=30
+HEALTH_HEIGHT=30
 HEALTH_COMP=pygame.transform.rotate(pygame.transform.scale(HEALTH_IMAGE, (HEALTH_WIDTH, HEALTH_HEIGHT)), 0)
 
 
@@ -51,13 +51,14 @@ ENEMY_COMP = pygame.transform.rotate(pygame.transform.scale(ENEMY_IMAGE, (ENEMY_
 #Creating a class for player the main character
 class Player(pygame.sprite.Sprite):
   
-  def __init__(self,width, height, speed, max_health,player_image,x,y,health,score):
+  def __init__(self,width, height, speed, max_health,player_image,x,y,health,score,health_potions):
     #self.rect = pygame.Rect(2, 2, width, height) # linking pygame
     self.image=player_image
     self.speed = speed # Creating the variable 
     self.max_health = max_health
     self.health=health
     self.score=score
+    self.health_potions=health_potions
 
     self.rect=self.image.get_rect()
     self.rect.width = width
@@ -99,12 +100,28 @@ def draw_health_potion(health_potion_list):
 
 def draw_lives(entity):
     #display_surface = pygame.display.set_mode((X, Y))#
-    health=str(entity.health)
+    health="Health = "+str(entity.health)
     #print(health)
     font = pygame.font.Font('freesansbold.ttf', 32) 
-    text = font.render(health, True, black)
+    text = font.render(health, True, white)
     textRect = text.get_rect()
     textRect.center = (100,500)
+    WINDOW.blit(text, textRect)
+
+def draw_health_potions(entity):
+    health_potions="Potions = "+str(entity.health_potions)
+    font = pygame.font.Font('freesansbold.ttf', 32) 
+    text = font.render(health_potions, True, black)
+    textRect = text.get_rect()
+    textRect.center = (300,500)
+    WINDOW.blit(text, textRect)
+
+def draw_score(entity):
+    score="Score = "+str(entity.score)
+    font = pygame.font.Font('freesansbold.ttf', 32) 
+    text = font.render(score, True, white)
+    textRect = text.get_rect()
+    textRect.center = (500,500)
     WINDOW.blit(text, textRect)
 
 def draw_coins(coins_list):
@@ -385,7 +402,7 @@ for y, row in enumerate(current_level):
         elif cell =="H":
             health_potion=Health_Potion(x * TILE_SIZE, y * TILE_SIZE, HEALTH_IMAGE)
             health_list.append(health_potion)   
-player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,101,5) #Creating a player as a object
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,101,5,0) #Creating a player as a object
 enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
 
 
@@ -398,6 +415,7 @@ time_limit=3*60
   
   
 while loop:
+    reset=False
     elapsed_time = time.time() - start_time # The elapsed time will be calculate 
     if elapsed_time > time_limit:
       print("Better luck next time") # When going the past the time limit this message will show up 
@@ -418,8 +436,8 @@ while loop:
     draw_coins(coins_list)  # it will show the coins on the screen
     draw_traps(traps_list)
     draw_health_potion(health_list)
-    score_text = font.render(f"score: {player_init.score}", True, (255,255,255)) # it will show the player score on the top left in white text 
-    WINDOW.blit(score_text, (10,10))  
+    draw_health_potions(player_init)
+    draw_score(player_init)
     draw_maze(current_level) 
     
 
@@ -440,6 +458,16 @@ while loop:
     trap_collision = pygame.sprite.spritecollide(player_init, traps_group, True)
     if trap_collision:
         player_init.health -= 25
+
+    for health_potion in range(len(health_list)):
+        if player_init.rect.colliderect(health_list[health_potion]):
+            del health_list[health_potion]
+            player_init.health_potions += 1
+            break
+    if move[pygame.K_e] and player_init.health_potions > 0:
+            player_init.health += 25
+            player_init.health_potions -= 1
+            
             
     enemy_init.enemy_to_player(player_init.rect,maze_walls)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
@@ -453,9 +481,12 @@ while loop:
         elif current_level==level_2:
             current_level=level_3
             current_level_no_obstacle=level_3_no_obstacle
+        reset=True
+    if reset:
         maze_walls = [] 
         traps_list = []
         coins_list = []
+        health_list=[]
         for y, row in enumerate(current_level):
             for x, cell in enumerate(row):
                 if cell == "x":
@@ -469,6 +500,9 @@ while loop:
                 elif cell == "T":
                     trap = Trap(x * TILE_SIZE, y * TILE_SIZE, TRAP_IMAGE)
                     traps_list.append(trap)
+                elif cell =="H":
+                    health_potion=Health_Potion(x * TILE_SIZE, y * TILE_SIZE, HEALTH_IMAGE)
+                    health_list.append(health_potion)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
