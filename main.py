@@ -9,6 +9,8 @@ pygame.init()
 # WINDOW_WIDTH = 704
 # WINDOW_HEIGHT = 320
 
+FPS=60
+
 WINDOW_WIDTH = 1180#16:9 wont work for maze size
 WINDOW_HEIGHT = 720
 WINDOW=pygame.display.set_mode([WINDOW_WIDTH,WINDOW_HEIGHT])
@@ -58,6 +60,11 @@ EXTRA_TIME_WIDTH=15
 EXTRA_TIME_HEIGHT=15
 EXTRA_TIME_COMP=pygame.transform.rotate(pygame.transform.scale(EXTRA_TIME_IMAGE, (EXTRA_TIME_WIDTH, EXTRA_TIME_HEIGHT)), 0)
 
+SPEED_IMAGE=pygame.image.load(os.path.join('Assets', 'speed_powerup.png')).convert_alpha()
+SPEED_WIDTH=15
+SPEED_HEIGHT=15
+SPEED_COMP=pygame.transform.rotate(pygame.transform.scale(SPEED_IMAGE, (SPEED_WIDTH, SPEED_HEIGHT)), 0)
+
 GAME_OVER_IMAGE=pygame.image.load(os.path.join('Assets', 'game_over.png'))
 
 #Classes go here
@@ -98,6 +105,13 @@ class Health_Potion(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+class speed_powerup(pygame.sprite.Sprite):
+    def __init__(self, x, y, SPEED_IMAGE):
+        super().__init__()
+        self.image = pygame.transform.scale(SPEED_IMAGE, (TILE_SIZE, TILE_SIZE)) # Getting the trap images from assets
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 # Could be done in check_collision and creating a coin
 class Coin(pygame.sprite.Sprite):
@@ -173,6 +187,10 @@ def draw_coins(coins_list):
     for coin in coins_list:
         WINDOW.blit(COIN_COMP, (coin.rect.x, coin.rect.y))
 
+def draw_speed(speed_list):
+    for boots in speed_list:
+        WINDOW.blit(SPEED_COMP, (boots.rect.x, boots.rect.y))
+
 def draw_time(time_limit, elapsed_time, time_list):
     time_remaining = time_limit - elapsed_time
     time_remaining = math.ceil(time_remaining)
@@ -189,16 +207,16 @@ def draw_time(time_limit, elapsed_time, time_list):
 
 
 #all other functions here
-def movement(entity,key_press):
+def movement(entity,key_press,current_speed):
     player=entity
     if move[pygame.K_a]:
-        player.move_ip(-1,0) 
+        player.move_ip(-int(current_speed),0) 
     elif move[pygame.K_d]:
-        player.move_ip(1,0) 
+        player.move_ip(int(current_speed),0) 
     elif move[pygame.K_w]:
-        player.move_ip(0,-1)
+        player.move_ip(0,-int(current_speed))
     elif move[pygame.K_s]:
-        player.move_ip(0,1)
+        player.move_ip(0,int(current_speed))
 
 # # Function to check for collisions with the player and coin
 def coin_collision(player_init, coins_group):
@@ -261,7 +279,7 @@ level_1 = [
     "x  S        xx                  x      x",
     "x     C     xx       F         xT      x",
     "x    xx                     x   x  xx  x", 
-    "x    T    C     xxxxxxx  x  x      xx  x", 
+    "x A  T    C     xxxxxxx  x  x      xx  x", 
     "x           x   xxxxxxx  x  x      xx  x",
     "x  xxxxxx   x  T    xxx Tx  xxxx   xx  x",
     "x    xxx    x       xxx  x  xx     xx  x",
@@ -314,7 +332,7 @@ level_2 = [
     "x    xxx       T         x      xxxxxxxx",
     "x    xxxxxxxxxxxxxxxx    xT   TTx  H   x",
     "x      F      T     x    xTTT  Tx      x",
-    "x                   x    x      x      x",
+    "x                   x A  x      x      x",
     "x      T      x   TTx    xT    Tx      x",
     "x    xxxxxxxxxxT    x    xT    Tx      x",
     "x    x  T C         x    xTT    xTTT   x",
@@ -355,7 +373,7 @@ level_2_no_obstacle = [
 level_3 = [
 
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  "x                                        x H    x",
+  "x                         A              x H    x",
   "x         S                              x      x",
   "x     x     x     T    xxxxxxxxx    xx   x      x",
   "x     xTT   x     x    x             x          x",
@@ -431,6 +449,7 @@ traps_list = []
 coins_list = []
 health_list=[]
 extra_time_list=[]
+speed_boot_list=[]
 for y, row in enumerate(current_level):
     for x, cell in enumerate(row):
         if cell == "x":
@@ -447,8 +466,11 @@ for y, row in enumerate(current_level):
             health_list.append(health_potion) 
         elif cell == "F":
             extra_time_init=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
-            extra_time_list.append(extra_time_init)  
-player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,50,0,0) #Creating a player as a object
+            extra_time_list.append(extra_time_init)
+        elif cell == "A":
+            speed_boot_init=speed_powerup(x * TILE_SIZE, y * TILE_SIZE, SPEED_IMAGE)
+            speed_boot_list.append(speed_boot_init)  
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 1,50,PLAYER_IMAGE,player_x,player_y,50,0,0) #Creating a player as a object
 #ssenemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
 
 
@@ -482,9 +504,11 @@ while in_main_menu:
     text_rect = text.get_rect(center=start_button.center)
     WINDOW.blit(text, text_rect)
     pygame.display.flip()
-  
+
+clock = pygame.time.Clock()
 win=False
 while loop:
+    clock.tick(FPS)
     if player_init.health <= 0:
         end_game(win, player_init)
     reset=False
@@ -511,10 +535,11 @@ while loop:
     draw_score(player_init)
     draw_maze(current_level) 
     draw_time(time_limit, elapsed_time, extra_time_list)
+    draw_speed(speed_boot_list)
 
     move=pygame.key.get_pressed()
     if move:
-        movement(player_init.rect,move)
+        movement(player_init.rect,move,player_init.speed)
 
     for wall_rect in maze_walls:
         if player_init.rect.colliderect(wall_rect):
@@ -525,6 +550,12 @@ while loop:
         if player_init.rect.colliderect(coins_list[coins]):
             player_init.score += 1
             del coins_list[coins]
+            break
+    
+    for boots in range(len(speed_boot_list)):
+        if player_init.rect.colliderect(speed_boot_list[boots]):
+            player_init.speed +=1
+            del speed_boot_list[boots]
             break
     trap_collision = pygame.sprite.spritecollide(player_init, traps_group, True)
     if trap_collision:
@@ -552,6 +583,7 @@ while loop:
 
     if current_level[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
         if current_level==level_1:
+            player_init.speed=4
             current_level=level_2
             time_limit=60
             current_level_no_obstacle=level_2_no_obstacle
@@ -571,6 +603,7 @@ while loop:
         coins_list = []
         health_list=[]
         extra_time_list=[]
+        speed_boot_list=[]
         for y, row in enumerate(current_level):
             for x, cell in enumerate(row):
                 if cell == "x":
@@ -590,6 +623,9 @@ while loop:
                 elif cell == "F":
                     extra_time_init=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
                     extra_time_list.append(extra_time_init)
+                elif cell == "A":
+                    speed_boot_init=speed_powerup(x * TILE_SIZE, y * TILE_SIZE, SPEED_IMAGE)
+                    speed_boot_list.append(speed_boot_init)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
