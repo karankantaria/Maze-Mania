@@ -8,8 +8,8 @@ from handle_enemy import enemy,  enemy_collision, Node
 pygame.init()
 # WINDOW_WIDTH = 704
 # WINDOW_HEIGHT = 320
-WINDOW_WIDTH = 960
-WINDOW_HEIGHT = 540
+WINDOW_WIDTH = 1920
+WINDOW_HEIGHT = 1080
 #16:9^
 WINDOW=pygame.display.set_mode([WINDOW_WIDTH,WINDOW_HEIGHT])
 BLACK=(0,0,0)

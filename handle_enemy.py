@@ -21,12 +21,12 @@ class enemy(pygame.sprite.Sprite):
 
     def enemy_to_player(self,player_rect,maze_wall):
         path = self.calc_path(self.rect.center, player_rect.center, maze_wall)
-        print("Path:", path)
+        #print("Path:", path)
 
         if path:
             next_position = path[0]
             x, y = next_position
-            print("Next position:", next_position)
+            #print("Next position:", next_position)
             self.rect.center = (x, y)
 
     def calc_path(self, start, end, maze_walls):
