@@ -115,12 +115,42 @@ class Coin(pygame.sprite.Sprite):
 def coin_collision(player_init, coins_group):
     collected_coins=pygame.sprite.spritecollide(player_init, coins_group, True)       
     player_init.score +=len(collected_coins)
+
+
+
+
+
+   #LOAD IMAGES
+
+start_image = pygame.image.load(os.path.join('6orceshd.png')).convert_alpha()
+
+start_image('6orceshd.png')
+
+
+#botton class
+
+class Button():
+    def __init__(self, x, y, image):
+        self.image= image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+    def draw(self):
+        WINDOW.blit (self.image,(self.rect.x, self.rect.y))
+
+
+start_button = Button(100, 200, start_image)
+
+
+
+
+
 black = (0, 0, 0)
 white = (255, 255, 255)
 
 level_1 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x  S        xx                  x      x",
+    "x           xx                  x      x",
     "x           xx                  x      x",
     "x           xx         P        x      x",
     "x    xx                     x   x  xx  x", 
@@ -134,7 +164,7 @@ level_1 = [
     "xxx  xxx  xxxxxxxx  xxx  x             x",
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
     "x    xxx            xxx         E      x",
-    "x   xxxxxxxxxxxxxxxxxx                 x",
+    "x S xxxxxxxxxxxxxxxxxxx                x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
 
@@ -158,7 +188,7 @@ level_1_no_obstacle = [
     "xxx  xxx  xxxxxxxx  xxx  x             x",
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
     "x    xxx            xxx                x",
-    "x   xxxxxxxxxxxxxxxxxx                 x",
+    "x   xxxxxxxxxxxxxxxxxxx                x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
 
@@ -177,15 +207,60 @@ level_2 = [
     "x   xx              x    xx     xxx    x",
     "xxxxxx              x    xx            x",
     "x        xxxxxxxxxxxx    xx    xxxxxxxxx",
-    "x        xxxx                  x   x   x",
+    "x        xxxx                  x   x S x",
     "x   xx   xxxx                  x   x   x",
     "x   xx          xxxxxxxxxxxxxxxx   x   x",
     "x   xx          xxxx               x   x",
     "x   xxxxxxxxxxxxxxxx     x             x",
-    "x S                      xxxxxxxxxxxxxxx",
+    "x                        xxxxxxxxxxxxxxx",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 ]
 
+ 
+level_2_no_obstacle = [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "x                        xx            x",
+    "x    xxx                 xx     xxxxxxxx",
+    "x    xxxxxxxxxxxxxxxx    xx     x E    x",
+    "x                   x    xx     x      x",
+    "x               x   x    xx     xxx    x",
+    "x   xxxxxxxxxxxxx   x    xx     xxx    x",
+    "x   xx              x    xx     xxx    x",
+    "xxxxxx              x    xx            x",
+    "x        xxxxxxxxxxxx    xx    xxxxxxxxx",
+    "x        xxxx                  x   x S x",
+    "x   xx   xxxx                  x   x   x",
+    "x   xx          xxxxxxxxxxxxxxxx   x   x",
+    "x   xx          xxxx               x   x",
+    "x   xxxxxxxxxxxxxxxx     x             x",
+    "x                        xxxxxxxxxxxxxxx",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+]
+
+level_3 = [
+
+  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "x                                         x",
+  "x     x   x         xxxxxxxx    xxx   x   x",
+  "x     x   x    x    x             x       x",
+  "x     x   x    x    x     x       xxxx    x",
+  "x     x   x    x    x     x          x    x",
+  "x     x   x    x    x     xxxxxxx    x    x",
+  "x     x   x    x    x           x    x    x",
+  "x     x   x    x    xxxxxx     x    x    x",
+  "x     x   x    x          x     x    x    x",
+  "x     x   x    x   xxx    x     x    x    x",
+  "x     x   x    x     x    x     x    xxxxxx",
+  "x     x   x    x     x    x     x         x",
+  "x     x   xxxxxx     xxxxxx     x    x    x",
+  "x     x   x          xxxxxxx    x    x    x",
+  "x     x   xxxxxxxxxxxxx       xxx    x    x",
+  "x     x                       x      x    x",
+  "x     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    x",
+  "x                           S x  E        x",
+  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  
+]
 TILE_SIZE = 24
 
 
@@ -207,6 +282,19 @@ for y, row in enumerate(level_1):
         if cell == "x":
             wall_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
             maze_walls.append(wall_rect)
+
+
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,0) #Creating a player as a object
+enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,level_2_no_obstacle)
+coins_group = pygame.sprite.Group()
+maze_walls = []  #For collisions with player
+for y, row in enumerate(level_2):
+    for x, cell in enumerate(row):
+        if cell == "x":
+            wall_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+            maze_walls.append(wall_rect)
+
+
 
 start_time=time.time()
 time_limit=3*60
