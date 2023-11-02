@@ -128,6 +128,12 @@ def draw_coins(coins_list):
     for coin in coins_list:
         WINDOW.blit(COIN_COMP, (coin.rect.x, coin.rect.y))
 
+def draw_fov(player_rect, level, WINDOW):
+    FOV_RADIUS = 100  # Adjust this to your preferred FOV radius
+    fov_mask = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+    pygame.draw.circle(fov_mask, (0, 0, 0, 200), player_rect.center, FOV_RADIUS)
+    WINDOW.blit(fov_mask, (0, 0), special_flags=pygame.BLEND_RGBA_SUB)
+
 
 # Making Class for the trap 
 class Trap(pygame.sprite.Sprite):
@@ -438,7 +444,8 @@ while loop:
     draw_health_potion(health_list)
     draw_health_potions(player_init)
     draw_score(player_init)
-    draw_maze(current_level) 
+    draw_maze(current_level)
+    draw_fov(player_init.rect, current_level, WINDOW) 
     
 
     move=pygame.key.get_pressed()
