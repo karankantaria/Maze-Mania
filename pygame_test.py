@@ -20,9 +20,9 @@ TRAP_IMAGE = pygame.image.load(os.path.join('Assets', 'pngwing.com.png'))
 
 
 
-COIN_IMAGE = pygame.image.load(os.path.join('Assets', 'pngtree-glossy-golden-coin-icon-png-image_2898883.jpg')).convert_alpha()# linking coin images with a asset
-COIN_WIDTH = 15
-COINT_HEIGHT = 15
+COIN_IMAGE = pygame.image.load(os.path.join('Assets', 'coin_clear_background.png')).convert_alpha()# linking coin images with a asset
+COIN_WIDTH = 20
+COINT_HEIGHT = 20
 COIN_COMP=pygame.transform.rotate(pygame.transform.scale(COIN_IMAGE, (COIN_WIDTH, COINT_HEIGHT)), 0)
 
 
@@ -263,21 +263,24 @@ level_1_no_obstacle= [
 #creating level 2 
 level_2 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x                        xx            x",
-    "x    xxx                 xx     xxxxxxxx",
-    "x    xxxxxxxxxxxxxxxx    xx     x E    x",
-    "x                   x    xx     x      x",
-    "x               x   x    xx     xxx    x",
-    "x   xxxxxxxxxxxxx   x    xx     xxx    x",
-    "x   xx              x    xx     xxx    x",
-    "xxxxxx              x    xx            x",
-    "x        xxxxxxxxxxxx    xx    xxxxxxxxx",
-    "x        xxxx                  x   x S x",
-    "x   xx   xxxx                  x   x   x",
-    "x   xx          xxxxxxxxxxxxxxxx   x   x",
-    "x   xx          xxxx               x   x",
-    "x   xxxxxxxxxxxxxxxx     x             x",
-    "x                        xxxxxxxxxxxxxxx",
+    "x                        x           C x",
+    "x                        x             x",
+    "x    xxx       T         x      xxxxxxxx",
+    "x    xxxxxxxxxxxxxxxx    x      x      x",
+    "x                   x    x      x      x",
+    "x                   x    x      x      x",
+    "x      T      x     x    x      x      x",
+    "x    xxxxxxxxxx     x    x      x      x",
+    "x    x    C         x    x      x      x",
+    "xxxxxx              x    x             x",
+    "x         xxxxxxxxxxx    x     xxxxxxxxx",
+    "x         xxx                  x   x S x",
+    "x    x    xxx                T x   x   x",
+    "x    x          xxxxxxxxxxxxxxxx   x E x",
+    "x    x         C xxxx                  x",
+    "x    xxxxxxxxxxxxxxx                   x",
+    "x                                      x",
+    "x                        x             x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 ]
 
@@ -305,15 +308,44 @@ level_2_no_obstacle = [
 
 level_3 = [
 
+  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "x                                        x      x",
+  "x                                        x      x",
+  "x     x     x     T    xxxxxxxxx    xx   x      x",
+  "x     x     x     x    x             x          x",
+  "x     x     x     x    x      x       xxxxx     x",
+  "x     x     x     x    x      x C        xx     x",
+  "x     x     x     x    x      xxxxxxx    xx     x",
+  "x     x     x     x    x            x    xx     x",
+  "x     x     x     x    xxxxxxx    T x    xx  T  x",
+  "x     x     x     x           x     x    xx     x",
+  "x     x     x     x           x     x    xx     x",
+  "x     x     x     x   xxx     x     x    xx     x",
+  "x     x     x     x   T x     x     x    xxxxxxxx",
+  "x   C x     x     x     x     x     x     x     x",
+  "x     x     xxxxxxx     xxxxxxx     x     x     x",
+  "x     x     x           xxx xxxx    x     x     x",
+  "x     x     xxxxxxxxxxxxxx  C     xxx     x     x",
+  "x     x                           x       x     x",
+  "x     x                           x       x     x",
+  "x     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx     x",
+  "x                               S x  E          x",
+  "x                               S x             x",
+  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  
+]
+
+level_3_no_obstacle = [
+
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "x                                         x",
-  "x     x   x         xxxxxxxx    xxx   x   x",
+  "x     x   x    T    xxxxxxxx    xxx   x   x",
   "x     x   x    x    x             x       x",
   "x     x   x    x    x     x       xxxx    x",
   "x     x   x    x    x     x          x    x",
   "x     x   x    x    x     xxxxxxx    x    x",
   "x     x   x    x    x           x    x    x",
-  "x     x   x    x    xxxxxx     x    x    x",
+  "x     x   x    x    xxxxxx      x    x    x",
   "x     x   x    x          x     x    x    x",
   "x     x   x    x   xxx    x     x    x    x",
   "x     x   x    x     x    x     x    xxxxxx",
@@ -413,10 +445,28 @@ while loop:
     enemy_init.enemy_to_player(player_init.rect,maze_walls)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
     draw_lives(player_init)
-    if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
+
+
+    if current_level[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
         if current_level==level_1:
             current_level=level_2
             current_level_no_obstacle=level_2_no_obstacle
+        elif current_level==level_2:
+            current_level=level_3
+            current_level_no_obstacle=level_3_no_obstacle
+        maze_walls = [] 
+        traps_list = []
+        coins_list = []
+        for y, row in enumerate(current_level):
+            for x, cell in enumerate(row):
+                if cell == "x":
+                    wall_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                    maze_walls.append(wall_rect)
+                elif cell == "C":
+                    coin = Coin(x * TILE_SIZE, y * TILE_SIZE, COIN_IMAGE) 
+                    coins_list.append(coin)
+                elif cell == "S":
+                    player_init.rect.x, player_init.rect.y = x * TILE_SIZE, y * TILE_SIZE
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
