@@ -238,7 +238,7 @@ level_1 = [
 ]
 
 
-level_1 = [
+level_1_no_obstacle= [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "x           xx                  x      x",
     "x           xx                 x       x",
@@ -348,16 +348,16 @@ for y, row in enumerate(level_1):
 
 
 
-
-player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,0) #Creating a player as a object
-enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,current_level_no_obstacle)
-coins_group = pygame.sprite.Group()
 maze_walls = []  #For collisions with player
-for y, row in enumerate(level_2):
+for y, row in enumerate(level_1):
     for x, cell in enumerate(row):
         if cell == "x":
             wall_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
             maze_walls.append(wall_rect)
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,0) #Creating a player as a object
+enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
+coins_group = pygame.sprite.Group()
+
 
 
 
