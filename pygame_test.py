@@ -35,7 +35,7 @@ HEALTH_HEIGHT=30
 HEALTH_COMP=pygame.transform.rotate(pygame.transform.scale(HEALTH_IMAGE, (HEALTH_WIDTH, HEALTH_HEIGHT)), 0)
 
 #background image level 1 only for now
-BACKGROUND_TEST = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Grass_Sample.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
+BACKGROUND_IMAGE = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Level_1_background.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 #Image for the player
 PLAYER_IMAGE = pygame.image.load(os.path.join('Assets', 'test_sprite.png'))
@@ -51,6 +51,12 @@ ENEMY_IMAGE = pygame.image.load(os.path.join('Assets', 'monster2_test.png'))
 ENEMY_WIDTH = 15
 ENEMY_HEIGHT = 30
 ENEMY_COMP = pygame.transform.rotate(pygame.transform.scale(ENEMY_IMAGE, (ENEMY_WIDTH, ENEMY_HEIGHT)), 0)
+
+#Imge for the extra time powerup
+EXTRA_TIME_IMAGE=pygame.image.load(os.path.join('Assets', 'extra_time_image.png'))
+EXTRA_TIME_WIDTH=15
+EXTRA_TIME_HEIGHT=15
+EXTRA_TIME_COMP=pygame.transform.rotate(pygame.transform.scale(EXTRA_TIME_IMAGE, (EXTRA_TIME_WIDTH, EXTRA_TIME_HEIGHT)), 0)
 
 #Classes go here
 class Player(pygame.sprite.Sprite):
@@ -108,7 +114,15 @@ class Button():
         self.rect.topleft = (x, y)
 
     def draw(self):
-        WINDOW.blit (self.image,(self.rect.x, self.rect.y)) 
+        WINDOW.blit (self.image,(self.rect.x, self.rect.y))
+
+class extra_time(pygame.sprite.Sprite):
+    def __init__(self, x, y, EXTRA_TIME_IMAGE): 
+        super().__init__()
+        self.image = pygame.transform.scale(EXTRA_TIME_IMAGE, (TILE_SIZE, TILE_SIZE))  # Getting the image to the coin
+        self.rect = self.image.get_rect() 
+        self.rect.x = x
+        self.rect.y = y          
 
 #All draw functions here
 def draw_maze(level):
@@ -157,6 +171,19 @@ def draw_coins(coins_list):
     for coin in coins_list:
         WINDOW.blit(COIN_COMP, (coin.rect.x, coin.rect.y))
 
+def draw_time(time_limit, elapsed_time, time_list):
+    time_remaining = time_limit - elapsed_time
+    time_remaining = math.ceil(time_remaining)
+    time_remaining = "Time left = " + str(time_remaining)
+    font = pygame.font.Font('freesansbold.ttf', 32) 
+    text = font.render(time_remaining, True, white)
+    textRect = text.get_rect()
+    textRect.center = (900,500)
+    WINDOW.blit(text, textRect)
+
+    for time in time_list:
+        WINDOW.blit(EXTRA_TIME_COMP, (time.rect.x, time.rect.y))
+
 
 
 #all other functions here
@@ -201,20 +228,20 @@ time_limit = 3 * 60 # 60 seconds times 3 equals 3 mintues
 level_1 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "x  S        xx                  x      x",
-    "x     C     xx                 x       x",
+    "x     C     xx       F         xT      x",
     "x    xx                     x   x  xx  x", 
     "x    T    C     xxxxxxx  x  x      xx  x", 
     "x           x   xxxxxxx  x  x      xx  x",
-    "x  xxxxxx   x  T    xxx  x  xxxx   xx  x",
+    "x  xxxxxx   x  T    xxx Tx  xxxx   xx  x",
     "x    xxx    x       xxx  x  xx     xx  x",
     "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
     "xxx  xxx            xxx  x  xxxxxxxxxxxx",
-    "xxx  xxx       H    xxx  x             x",
-    "xxx  xxx  xxxxxxxx  xxx  x    T        x",
-    "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
+    "xxx  xxx       H    xxx Tx        T    x",
+    "xxx  xxx Txxxxxxxx  xxx  x    T        x",
+    "xxx  xxx            xxxT xxxxxxxxxxxxxxx",
     "x    xxx            xxx                x",
-    "x   xxxxxxxxxxxxxxxxxx    C     P      x",
-    "x   xxxxxxxxxxxxxxxxxxx         E       x",
+    "x   xxxxxxxxxxxxxxxxxx    C     E      x",
+    "x   xxxxxxxxxxxxxxxxxxx                x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
 
@@ -251,20 +278,20 @@ level_1_no_obstacle= [
 #creating level 2 
 level_2 = [
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "x                        x           C x",
-    "x                        x             x",
-    "x    xxx E     T         x      xxxxxxxx",
-    "x    xxxxxxxxxxxxxxxx    x      x  H   x",
+    "x F T                    x           C x",
+    "x   T                    x             x",
+    "x    xxx       T         x      xxxxxxxx",
+    "x    xxxxxxxxxxxxxxxx    xT   TTx  H   x",
+    "x             T     x    xTTT  Tx      x",
     "x                   x    x      x      x",
-    "x                   x    x      x      x",
-    "x      T      x     x    x      x      x",
-    "x    xxxxxxxxxx     x    x      x      x",
-    "x    x    C         x    x      x      x",
+    "x      T      x   TTx    xT    Tx      x",
+    "x    xxxxxxxxxxT    x    xT    Tx      x",
+    "x    x  T C         x    xTT    xTTT   x",
     "xxxxxx              x    x             x",
     "x         xxxxxxxxxxx    x     xxxxxxxxx",
     "x         xxx                  x   x S x",
-    "x    x    xxx                T x   x   x",
-    "x    x          xxxxxxxxxxxxxxxx   x   x",
+    "x    xT   xxx                T x   x   x",
+    "x    x          xxxxxxxxxxxxxxxx   x E x",
     "x    x         C xxxx                  x",
     "x    xxxxxxxxxxxxxxx                   x",
     "x                                      x",
@@ -300,25 +327,25 @@ level_3 = [
   "x                                        x H    x",
   "x         S                              x      x",
   "x     x     x     T    xxxxxxxxx    xx   x      x",
-  "x     x     x     x    x             x          x",
-  "x     x     x     x    x      x       xxxxx     x",
-  "x     x     x     x    x      x C        xx     x",
+  "x     xTT   x     x    x             x          x",
+  "x     x    Tx     x    x      x       xxxxx     x",
+  "x     xT    xT    x    x      x C        xx     x",
   "x     x     x     x    x      xxxxxxx    xx     x",
-  "x     x     x     x    x            x    xx     x",
-  "x     x     x     x    xxxxxxx    T x    xx  T  x",
-  "x     x     x     x           x     x    xx     x",
-  "x     x     x     x           x     x    xx     x",
-  "x     x     x     x   xxx     x     x    xx     x",
-  "x     x     x     x   T x     x     x    xxxxxxxx",
-  "x   C x     x     x     x     x     x     x     x",
-  "x     x     xxxxxxx     xxxxxxx     x     x     x",
-  "x     x     x           xxx xxxx    x     x     x",
+  "x     xT  TTx    Tx    x            x    xx     x",
+  "x     x     x     x    xxxxxxx    T x   Txx  T  x",
+  "x     xTT  Tx     x           x     x    xx     x",
+  "x   TTx     x     x           x     x  TTxx     x",
+  "x     xT    xT    x   xxx     x     x    xx     x",
+  "x  TTTx    Tx     x   T x     x     xTT  xxxxxxxx",
+  "x  TC x     xF  TTx     x     x     x     x     x",
+  "x     xT    xxxxxxx     xxxxxxx     x     x     x",
+  "x     x    Tx           xxx xxxx    x     x     x",
   "x     x     xxxxxxxxxxxxxx  C     xxx     x     x",
   "x     x                           x             x",
   "x     x                           x             x",
   "x     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx      x",
-  "x                                 x  E          x",
-  "x                                 x             x",
+  "x     T T                    TTTT x  E          x",
+  "x          TT                     x             x",
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   
 ]
@@ -372,6 +399,7 @@ maze_walls = []  #For collisions with player
 traps_list = []
 coins_list = []
 health_list=[]
+extra_time_list=[]
 for y, row in enumerate(current_level):
     for x, cell in enumerate(row):
         if cell == "x":
@@ -385,15 +413,18 @@ for y, row in enumerate(current_level):
             traps_list.append(trap) 
         elif cell =="H":
             health_potion=Health_Potion(x * TILE_SIZE, y * TILE_SIZE, HEALTH_IMAGE)
-            health_list.append(health_potion)   
+            health_list.append(health_potion) 
+        elif cell == "F":
+            extra_time=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
+            extra_time_list.append(extra_time)  
 player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,100,0,0) #Creating a player as a object
-enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
+#ssenemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
 
 
 
 
 start_time=time.time()
-time_limit=3*60
+time_limit=30
 
 
   
@@ -406,16 +437,16 @@ while loop:
       break # It will end the loop when past the set time limit 
     old_player_x = player_init.rect.x
     old_player_y = player_init.rect.y
-    old_enemy_x = enemy_init.rect.x
-    old_enemy_y = enemy_init.rect.y 
+    # old_enemy_x = enemy_init.rect.x
+    # old_enemy_y = enemy_init.rect.y 
 
     #WINDOW.fill((0,0,0))
     # pygame.draw.rect(WINDOW,(50,50,50),Player)
-    WINDOW.blit(BACKGROUND_TEST, (0, 0))
+    WINDOW.blit(BACKGROUND_IMAGE, (0, 0))
     #pygame.draw.rect(WINDOW, BLACK, WIN_EDGE)
     #pygame.draw.rect(WINDOW, (255, 0, 0), player_init.rect)
     WINDOW.blit(PLAYER_COMP, (player_init.rect.x, player_init.rect.y))
-    WINDOW.blit(ENEMY_COMP, (enemy_init.rect.x, enemy_init.rect.y))
+    #WINDOW.blit(ENEMY_COMP, (enemy_init.rect.x, enemy_init.rect.y))
     #WINDOW.fill(black) 
     draw_coins(coins_list)  # it will show the coins on the screen
     draw_traps(traps_list)
@@ -423,7 +454,7 @@ while loop:
     draw_health_potions(player_init)
     draw_score(player_init)
     draw_maze(current_level) 
-    
+    draw_time(time_limit, elapsed_time, extra_time_list)
 
     move=pygame.key.get_pressed()
     if move:
@@ -448,29 +479,39 @@ while loop:
             del health_list[health_potion]
             player_init.health_potions += 1
             break
+    for extra_time in range(len(extra_time_list)):
+        if player_init.rect.colliderect(extra_time_list[extra_time]):
+            del extra_time_list[extra_time]
+            time_limit += 10
+            break
     if move[pygame.K_e] and player_init.health_potions > 0:
             player_init.health += 25
             player_init.health_potions -= 1
             
             
-    enemy_init.enemy_to_player(player_init.rect,maze_walls)
-    enemy_collision(player_init.rect,enemy_init.rect,player_init)
+    # enemy_init.enemy_to_player(player_init.rect,maze_walls)
+    # enemy_collision(player_init.rect,enemy_init.rect,player_init)
     draw_lives(player_init)
 
 
     if current_level[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
         if current_level==level_1:
             current_level=level_2
+            time_limit=60
             current_level_no_obstacle=level_2_no_obstacle
+            BACKGROUND_IMAGE = pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Level_2_background.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
         elif current_level==level_2:
             current_level=level_3
             current_level_no_obstacle=level_3_no_obstacle
+            time_limit=90
+            BACKGROUND_IMAGE=pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Level_3_background.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
         reset=True
     if reset:
         maze_walls = [] 
         traps_list = []
         coins_list = []
         health_list=[]
+        extra_time_list=[]
         for y, row in enumerate(current_level):
             for x, cell in enumerate(row):
                 if cell == "x":
@@ -487,6 +528,9 @@ while loop:
                 elif cell =="H":
                     health_potion=Health_Potion(x * TILE_SIZE, y * TILE_SIZE, HEALTH_IMAGE)
                     health_list.append(health_potion)
+                elif cell == "F":
+                    extra_time=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
+                    extra_time_list.append(extra_time)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
