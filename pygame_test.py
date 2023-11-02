@@ -3,7 +3,7 @@ import pygame
 import os
 import time  # Getting the game time imported
 import math
-from handle_enemy import enemy, enemy_move, enemy_collision, Node, a_star_pathfinding
+from handle_enemy import enemy,  enemy_collision, Node
 
 pygame.init()
 # WINDOW_WIDTH = 704
@@ -137,9 +137,9 @@ def coin_collision(player_init, coins_group):
 
    #LOAD IMAGES
 
-start_image = pygame.image.load(os.path.join('6orceshd.png')).convert_alpha()
+start_image=pygame.image.load(os.path.join('Assets', 'test_sprite.png'))
 
-start_image('6orceshd.png')
+#start_image('6orceshd.png')
 
 
 #botton class
@@ -181,7 +181,7 @@ level_1 = [
     "x    xxx            xxx         E      x",
     "x S xxxxxxxxxxxxxxxxxxx                x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-
+]
    
 # On the screen it will show the score 
 font = pygame.font.Font(None, 36)
@@ -202,7 +202,7 @@ while loop:
     elapsed_time = time.time() - start_time # The elapsed time will be calculate 
     if elapsed_time > time_limit:
       print("Better luck next time") # When going the past the time limit this message will show up 
-    break # It will end the loop when past the set time limit 
+      break # It will end the loop when past the set time limit 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -229,6 +229,31 @@ level_1 = [
     "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
     "x    xxx            xxx                x",
     "x   xxxxxxxxxxxxxxxxxx    C     P      x",
+    "x   xxxxxxxxxxxxxxxxxxx                x",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+
+
+
+
+]
+
+
+level_1 = [
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "x           xx                  x      x",
+    "x           xx                 x       x",
+    "x    xx                     x   x  xx  x", 
+    "x               xxxxxxx  x  x      xx  x", 
+    "x           x   xxxxxxx  x  x      xx  x",
+    "x  xxxxxx   x       xxx  x  xxxx   xx  x",
+    "x    xxx    x       xxx  x  xx     xx  x",
+    "x    xxx    xxxxxxxxxxx  x  xx     xx  x",
+    "xxx  xxx            xxx  x  xxxxxxxxxxxx",
+    "xxx  xxx            xxx  x             x",
+    "xxx  xxx  xxxxxxxx  xxx  x             x",
+    "xxx  xxx            xxx  xxxxxxxxxxxxxxx",
+    "x    xxx            xxx                x",
+    "x   xxxxxxxxxxxxxxxxxx                 x",
     "x   xxxxxxxxxxxxxxxxxxx                x",
     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 
@@ -307,6 +332,8 @@ level_3 = [
 ]
 TILE_SIZE = 24
 
+current_level = level_1
+current_level_no_obstacle=level_1_no_obstacle
 
 loop=True
 #Make player start at S
@@ -319,20 +346,11 @@ for y, row in enumerate(level_1):
         elif char == "C":
             coin_x, coin_y = x * TILE_SIZE, y * TILE_SIZE
 
-player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y) #Creating a player as a object
-enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y)
-
-maze_walls = []  #For collisions with player
-for y, row in enumerate(level_1):
-    for x, cell in enumerate(row):
-        if cell == "x":
-            wall_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-            maze_walls.append(wall_rect)
 
 
 
 player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,0) #Creating a player as a object
-enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,level_2_no_obstacle)
+enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,current_level_no_obstacle)
 coins_group = pygame.sprite.Group()
 maze_walls = []  #For collisions with player
 for y, row in enumerate(level_2):
@@ -345,6 +363,17 @@ for y, row in enumerate(level_2):
 
 start_time=time.time()
 time_limit=3*60
+
+coins_group = pygame.sprite.Group()
+for y, row in enumerate(level_1):
+    for x, char in enumerate(row):
+        if char == "S":
+            player_x, player_y = x * TILE_SIZE, y * TILE_SIZE
+        elif char == "P":
+            enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
+        if cell == "C":            # making coin == to c
+            coin = Coin(x * TILE_SIZE, y * TILE_SIZE, COIN_IMAGE)  # The coin image will show and be place in the maze 
+            coins_group.add(coin)
 
   
   
@@ -363,7 +392,9 @@ while loop:
     WINDOW.blit(PLAYER_COMP, (player_init.rect.x, player_init.rect.y))
     WINDOW.blit(ENEMY_COMP, (enemy_init.rect.x, enemy_init.rect.y))
     #WINDOW.fill(black) 
-      
+    draw_coins(coins_group)  # it will show the coins on the screen
+    score_text = font.render(f"score: {player_score}", True, (255,255,255)) # it will show the player score on the top left in white text 
+    WINDOW.blit(score_text, (10,10))  
     draw_maze(level_1) 
     
 
@@ -375,7 +406,7 @@ while loop:
         if player_init.rect.colliderect(wall_rect):
             player_init.rect.x = old_player_x
             player_init.rect.y = old_player_y
-    enemy_move(player_init.rect,enemy_init.rect)
+    enemy_init.enemy_to_player(player_init.rect,maze_walls)
     enemy_collision(player_init.rect,enemy_init.rect,player_init)
     draw_lives(player_init)
     if level_1[int(player_init.rect.y / TILE_SIZE)][int(player_init.rect.x / TILE_SIZE)] == 'E':
@@ -389,41 +420,12 @@ while loop:
 
     
 
-loop=True
-
-for y, row in enumerate(level_1):
-    for x, char in enumerate(row):
-        if char == "S":
-            player_x, player_y = x * TILE_SIZE, y * TILE_SIZE
-        elif char == "P":
-            enemy_x, enemy_y = x * TILE_SIZE, y * TILE_SIZE
        
 
 
-coins_group = pygame.sprite.Group()
-for y, row in enumerate(level_1):   # The coin will show up in the first level of the maze
-    for x, cell in enumerate(row):
-        if cell == "C":            # making coin == to c
-            coin = Coin(x * TILE_SIZE, y * TILE_SIZE, COIN_IMAGE)  # The coin image will show and be place in the maze 
-            coins_group.add(coin)
-
-while loop:
-
-   
-
-    draw_coins(coins_group)  # it will show the coins on the screen
-
-    # the score will auto update when the coin picked
-    score_text = font.render(f"score: {player_score}", True, (255,255,255)) # it will show the player score on the top left in white text 
-    WINDOW.blit(score_text, (10,10))   
-
-    
-            
-    pygame.display.update()
 
 
 
-pygame.quit()
 
     
 

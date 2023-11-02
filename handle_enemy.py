@@ -62,7 +62,7 @@ class enemy(pygame.sprite.Sprite):
                     if neighbor not in open_set:
                         open_set.append(neighbor)
 
-        return []
+                        return []
 
 
     def get_neighbors(self, node, maze_walls):
