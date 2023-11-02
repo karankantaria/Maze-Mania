@@ -16,9 +16,10 @@ BLACK=(0,0,0)
 WIN_EDGE = pygame.Rect(WINDOW_WIDTH//2 - 5, 0, 10, WINDOW_HEIGHT)
 pygame.display.set_caption("TCA2")
 
-TRAP_IMAGE = pygame.image.load(os.path.join('Assets', 'pngwing.com.png'))
-
-
+TRAP_IMAGE = pygame.image.load(os.path.join('Assets', 'spike_sprite.png'))
+TRAP_WIDTH = 20
+TRAP_HEIGHT = 20
+TRAP_COMP = pygame.transform.rotate(pygame.transform.scale(TRAP_IMAGE, (TRAP_WIDTH, TRAP_HEIGHT)), 0)
 
 COIN_IMAGE = pygame.image.load(os.path.join('Assets', 'coin_clear_background.png')).convert_alpha()# linking coin images with a asset
 COIN_WIDTH = 20
@@ -84,24 +85,9 @@ def draw_maze(level):
                 WALL_Y = y * TILE_SIZE
                 WINDOW.blit(MAZE_WALL, (WALL_X, WALL_Y))
 
-
-
-
-#Loading level
-def load_level():
-    pass
-
-#for enemy collision and for trap collision
-def check_collision():
-    pass
-
-#For player animation
-def player_animation():
-    pass
-
-#For enemy animation
-def enemy_animation():
-    pass
+def draw_traps(traps_list):
+    for trap in traps_list:
+        WINDOW.blit(TRAP_COMP, (trap.rect.x, trap.rect.y))
 
 def draw_lives(entity):
     #display_surface = pygame.display.set_mode((X, Y))#
@@ -128,10 +114,6 @@ class Trap(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-def draw_traps(traps_group):
-    for trap in traps_group:
-        WINDOW.blit(trap.image, trap.rect.topleft)
-
 
 # Could be done in check_collision and creating a coin
 class Coin(pygame.sprite.Sprite):
@@ -141,6 +123,7 @@ class Coin(pygame.sprite.Sprite):
         self.rect = self.image.get_rect() 
         self.rect.x = x
         self.rect.y = y    # 
+
 # # Function to check for collisions with the player and coin
 def coin_collision(player_init, coins_group):
     collected_coins=pygame.sprite.spritecollide(player_init, coins_group, True)       
@@ -192,18 +175,6 @@ pygame.init()
 start_time = time.time() # The time the player starting and with the current time
 time_limit = 3 * 60 # 60 seconds times 3 equals 3 mintues 
 
-loop =True
-
-while loop:
-
-    elapsed_time = time.time() - start_time # The elapsed time will be calculate 
-    if elapsed_time > time_limit:
-      print("Better luck next time") # When going the past the time limit this message will show up 
-      break # It will end the loop when past the set time limit 
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            loop = False       # Need to write this code at the end 
 
 
 
@@ -391,6 +362,9 @@ for y, row in enumerate(current_level):
         elif cell == "C":
             coin = Coin(x * TILE_SIZE, y * TILE_SIZE, COIN_IMAGE)  # The coin image will show and be place in the maze 
             coins_list.append(coin)
+        elif cell =="T":
+            trap = Trap(x * TILE_SIZE, y * TILE_SIZE, TRAP_IMAGE)
+            traps_list.append(trap)    
 player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,101,5) #Creating a player as a object
 enemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
 
@@ -404,7 +378,10 @@ time_limit=3*60
   
   
 while loop:
-
+    elapsed_time = time.time() - start_time # The elapsed time will be calculate 
+    if elapsed_time > time_limit:
+      print("Better luck next time") # When going the past the time limit this message will show up 
+      break # It will end the loop when past the set time limit 
     old_player_x = player_init.rect.x
     old_player_y = player_init.rect.y
     old_enemy_x = enemy_init.rect.x
@@ -419,6 +396,7 @@ while loop:
     WINDOW.blit(ENEMY_COMP, (enemy_init.rect.x, enemy_init.rect.y))
     #WINDOW.fill(black) 
     draw_coins(coins_list)  # it will show the coins on the screen
+    draw_traps(traps_list)
     score_text = font.render(f"score: {player_init.score}", True, (255,255,255)) # it will show the player score on the top left in white text 
     WINDOW.blit(score_text, (10,10))  
     draw_maze(current_level) 
@@ -467,6 +445,9 @@ while loop:
                     coins_list.append(coin)
                 elif cell == "S":
                     player_init.rect.x, player_init.rect.y = x * TILE_SIZE, y * TILE_SIZE
+                elif cell == "T":
+                    trap = Trap(x * TILE_SIZE, y * TILE_SIZE, TRAP_IMAGE)
+                    traps_list.append(trap)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
