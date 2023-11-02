@@ -58,6 +58,8 @@ EXTRA_TIME_WIDTH=15
 EXTRA_TIME_HEIGHT=15
 EXTRA_TIME_COMP=pygame.transform.rotate(pygame.transform.scale(EXTRA_TIME_IMAGE, (EXTRA_TIME_WIDTH, EXTRA_TIME_HEIGHT)), 0)
 
+GAME_OVER_IMAGE=pygame.image.load(os.path.join('Assets', 'game_over.png'))
+
 #Classes go here
 class Player(pygame.sprite.Sprite):
   
@@ -148,7 +150,7 @@ def draw_lives(entity):
     font = pygame.font.Font('freesansbold.ttf', 32) 
     text = font.render(health, True, white)
     textRect = text.get_rect()
-    textRect.center = (100,500)
+    textRect.center = (100,700)
     WINDOW.blit(text, textRect)
 
 def draw_health_potions(entity):
@@ -156,7 +158,7 @@ def draw_health_potions(entity):
     font = pygame.font.Font('freesansbold.ttf', 32) 
     text = font.render(health_potions, True, black)
     textRect = text.get_rect()
-    textRect.center = (300,500)
+    textRect.center = (300,700)
     WINDOW.blit(text, textRect)
 
 def draw_score(entity):
@@ -164,7 +166,7 @@ def draw_score(entity):
     font = pygame.font.Font('freesansbold.ttf', 32) 
     text = font.render(score, True, white)
     textRect = text.get_rect()
-    textRect.center = (500,500)
+    textRect.center = (500,700)
     WINDOW.blit(text, textRect)
 
 def draw_coins(coins_list):
@@ -178,7 +180,7 @@ def draw_time(time_limit, elapsed_time, time_list):
     font = pygame.font.Font('freesansbold.ttf', 32) 
     text = font.render(time_remaining, True, white)
     textRect = text.get_rect()
-    textRect.center = (900,500)
+    textRect.center = (900,700)
     WINDOW.blit(text, textRect)
 
     for time in time_list:
@@ -202,6 +204,35 @@ def movement(entity,key_press):
 def coin_collision(player_init, coins_group):
     collected_coins=pygame.sprite.spritecollide(player_init, coins_group, True)       
     player_init.score +=len(collected_coins)
+
+def end_game(win, player_init):
+    WINDOW.blit(GAME_OVER_IMAGE, (0, 0))
+    if win:
+        draw_score(player_init)
+    button_width = 200
+    button_height = 50
+    button_x = (WINDOW_WIDTH - button_width) // 2
+    button_y = (WINDOW_HEIGHT - button_height) // 2
+    retry_button = pygame.Rect(button_x, button_y, button_width, button_height)
+    font = pygame.font.Font(None, 36)
+    retry = True
+    while retry:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                retry = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                if start_button.collidepoint(mouse_x, mouse_y):
+                    retry = False  # Exit the main menu
+                    return True
+        WINDOW.blit(GAME_OVER_IMAGE, (0, 0))
+        # pygame.draw.rect(WINDOW, BLACK, start_button)
+        # text = font.render("Retry", True, white)
+        # text_rect = text.get_rect(center=start_button.center)
+        # WINDOW.blit(text, text_rect)
+        pygame.display.flip()
+        print("Score = ",player_init.score)
+    
 
 
 
@@ -417,7 +448,7 @@ for y, row in enumerate(current_level):
         elif cell == "F":
             extra_time_init=extra_time(x * TILE_SIZE, y * TILE_SIZE, EXTRA_TIME_IMAGE)
             extra_time_list.append(extra_time_init)  
-player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,100,0,0) #Creating a player as a object
+player_init = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 100,50,PLAYER_IMAGE,player_x,player_y,50,0,0) #Creating a player as a object
 #ssenemy_init = enemy(ENEMY_WIDTH,ENEMY_HEIGHT,ENEMY_IMAGE,enemy_x,enemy_y,maze_walls)
 
 
@@ -427,14 +458,39 @@ start_time=time.time()
 time_limit=30
 
 
+button_width = 200
+button_height = 50
+button_x = (WINDOW_WIDTH - button_width) // 2
+button_y = (WINDOW_HEIGHT - button_height) // 2
+start_button = pygame.Rect(button_x, button_y, button_width, button_height)
+font = pygame.font.Font(None, 36)
+
+menue_background = pygame.image.load(os.path.join('Assets', 'main_menue_background.png'))
+
+in_main_menu = True
+while in_main_menu:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            in_main_menu = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if start_button.collidepoint(mouse_x, mouse_y):
+                in_main_menu = False  # Exit the main menu
+    WINDOW.blit(menue_background, (0, 0))
+    pygame.draw.rect(WINDOW, BLACK, start_button)
+    text = font.render("Start Game", True, white)
+    text_rect = text.get_rect(center=start_button.center)
+    WINDOW.blit(text, text_rect)
+    pygame.display.flip()
   
-  
+win=False
 while loop:
+    if player_init.health <= 0:
+        end_game(win, player_init)
     reset=False
     elapsed_time = time.time() - start_time # The elapsed time will be calculate 
     if elapsed_time > time_limit:
-      print("Better luck next time") # When going the past the time limit this message will show up 
-      break # It will end the loop when past the set time limit 
+      end_game(win, player_init)
     old_player_x = player_init.rect.x
     old_player_y = player_init.rect.y
     # old_enemy_x = enemy_init.rect.x
@@ -505,6 +561,9 @@ while loop:
             current_level_no_obstacle=level_3_no_obstacle
             time_limit=90
             BACKGROUND_IMAGE=pygame.transform.scale(pygame.image.load(os.path.join('Assets', 'Level_3_background.png')), (WINDOW_WIDTH, WINDOW_HEIGHT))
+        elif current_level==level_3:
+            win=True
+            end_game(win, player_init)
         reset=True
     if reset:
         maze_walls = [] 
